@@ -4,8 +4,9 @@
 
 namespace TMVA{
 namespace Preprocessing{
-    class MinMaxScaler : TransformationBase {
+    class MinMaxScaler : public TransformationBase {
         public:
+        MinMaxScaler();
         void Transform(Float_t* inputs, UInt_t numSamples);
         void InverseTransform(Float_t* inputs, UInt_t numSamples);
         void Print();
