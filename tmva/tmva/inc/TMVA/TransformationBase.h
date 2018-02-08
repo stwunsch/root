@@ -18,7 +18,7 @@ namespace Preprocessing{
         Bool_t IsFinalized(){return fIsFinalized;}
 
         virtual void Transform(Float_t* inputs, UInt_t numSamples) = 0;
-        //virtual void InverseTransform(Float_t* inputs, UInt_t numSamples) = 0; // Not needed for this proof of concept
+        virtual void InverseTransform(Float_t* inputs, UInt_t numSamples) = 0; // Not needed for this proof of concept
         virtual void Print() = 0;
 
         protected:

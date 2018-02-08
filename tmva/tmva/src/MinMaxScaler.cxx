@@ -47,5 +47,14 @@ void MinMaxScaler::Transform(Float_t* inputs, UInt_t numSamples){
     }
 }
 
+void MinMaxScaler::InverseTransform(Float_t* inputs, UInt_t numSamples){
+    const UInt_t numFeatures = GetNumFeatures();
+    for(UInt_t i=0; i<numSamples; i++){
+        for(UInt_t j=0; j<numFeatures; j++){
+            inputs[i*numFeatures+j] = (inputs[i*numFeatures+j]-fScaleMin)*(fFeatureMax[j]-fFeatureMin[j])/(fScaleMax-fScaleMin)+fFeatureMin[j];
+        }
+    }
+}
+
 }
 }
