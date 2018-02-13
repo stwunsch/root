@@ -929,6 +929,28 @@ public:
       return MakeResultProxy(valuesPtr, loopManager, action.get());
    }
 
+   TResultProxy<typename TDFDetail::ColType_t<float, std::vector<float>>> TakeFloat(std::string_view column = "")
+   {
+      auto loopManager = GetDataFrameChecked();
+      const auto columns = column.empty() ? ColumnNames_t() : ColumnNames_t({std::string(column)});
+      const auto validColumnNames =
+         TDFInternal::GetValidatedColumnNames(*loopManager, 1, columns, fValidCustomColumns, fDataSource);
+      if (fDataSource)
+         TDFInternal::DefineDataSourceColumns(validColumnNames, *loopManager, TDFInternal::GenStaticSeq_t<1>(),
+                                              TTraits::TypeList<float>(), *fDataSource);
+
+      using RealT_t = typename TDFDetail::TTakeRealTypes<float, std::vector<float>>::RealT_t;
+      using RealColl_t = typename TDFDetail::TTakeRealTypes<float, std::vector<float>>::RealColl_t;
+
+      using Helper_t = TDFInternal::TakeHelper<RealT_t, float, RealColl_t>;
+      using Action_t = TDFInternal::TAction<Helper_t, Proxied>;
+      auto valuesPtr = std::make_shared<RealColl_t>();
+      const auto nSlots = fProxiedPtr->GetNSlots();
+      auto action = std::make_shared<Action_t>(Helper_t(valuesPtr, nSlots), validColumnNames, *fProxiedPtr);
+      loopManager->Book(action);
+      return MakeResultProxy(valuesPtr, loopManager, action.get());
+   }
+
    ////////////////////////////////////////////////////////////////////////////
    /// \brief Fill and return a one-dimensional histogram with the values of a column (*lazy action*)
    /// \tparam V The type of the column used to fill the histogram.

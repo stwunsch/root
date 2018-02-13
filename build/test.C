@@ -1,6 +1,12 @@
 #include "TMVA/MinMaxScaler.h"
 
 void test(){
+    ROOT::Experimental::TDataFrame tdf("TreeS", "tmva_class_example.root");
+    tdf.Define("var5", "var1*var2");
+    auto x = tdf.Take<float>("var1");
+    cout << x->size() << endl;
+    return;
+
     TMVA::Tools::Instance();
     float inputs[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     auto scaler = TMVA::Preprocessing::MinMaxScaler();
