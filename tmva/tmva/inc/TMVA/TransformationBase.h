@@ -17,7 +17,6 @@ namespace Preprocessing{
         virtual void Fit(Float_t* inputs, UInt_t numSamples, UInt_t numFeatures) = 0;
         virtual void Transform(Float_t* inputs, UInt_t numSamples) = 0;
         virtual void InverseTransform(Float_t* inputs, UInt_t numSamples) = 0;
-        virtual void Debug() = 0;
 
         UInt_t GetNumFeatures(){return fNumFeatures;}
 

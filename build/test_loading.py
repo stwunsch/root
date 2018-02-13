@@ -18,6 +18,7 @@ plot(x_flat.reshape(6000, 4), "original")
 # Load transformation from file
 f = ROOT.TFile("transformation.root")
 scaler = f.Get("TMVA::Preprocessing::MinMaxScaler")
+f.Close()
 
 # Run transformation
 scaler.Transform(x_flat, 6000)

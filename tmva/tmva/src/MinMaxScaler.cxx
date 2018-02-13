@@ -1,5 +1,4 @@
 #include "TMVA/MinMaxScaler.h"
-#include <iostream>
 #include <limits>
 
 namespace TMVA{
@@ -26,12 +25,6 @@ void MinMaxScaler::Fit(Float_t* inputs, UInt_t numSamples, UInt_t numFeatures){
             if(inputs[index]<fFeatureMin[j]) fFeatureMin[j] = inputs[index];
             if(inputs[index]>fFeatureMax[j]) fFeatureMax[j] = inputs[index];
         }
-    }
-}
-
-void MinMaxScaler::Debug(){
-    for(UInt_t i=0; i<GetNumFeatures(); i++){
-        std::cout << "Feature: " << i+1 << ", Min/Max: " << fFeatureMin[i] << "/" << fFeatureMax[i] << std::endl;
     }
 }
 

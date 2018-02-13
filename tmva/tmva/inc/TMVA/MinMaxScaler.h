@@ -11,7 +11,6 @@ namespace Preprocessing{
         void Fit(Float_t* inputs, UInt_t numSamples, UInt_t numFeatures);
         void Transform(Float_t* inputs, UInt_t numSamples);
         void InverseTransform(Float_t* inputs, UInt_t numSamples);
-        void Debug();
 
         private:
         std::vector<Float_t> fFeatureMin;
