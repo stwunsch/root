@@ -37,4 +37,5 @@ if __name__ == "__main__":
     plot(x_flat.reshape(6000, 4), "transform")
 
     # Store object to ROOT file
+    scaler.SetName("my_transformation")
     scaler.SaveAs("transformation.root")

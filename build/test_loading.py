@@ -16,7 +16,7 @@ if __name__ == "__main__":
     x_flat = np.ascontiguousarray(x.reshape(6000*4))
 
     # Load transformation from file
-    scaler = ROOT.TFile("transformation.root").Get("TMVA::Preprocessing::MinMaxScaler")
+    scaler = ROOT.TFile("transformation.root").Get("my_transformation")
 
     # Run transformation
     scaler.Transform(x_flat, 6000)

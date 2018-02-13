@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Rtypes.h"
-#include "TObject.h"
+#include "TNamed.h"
 
 namespace TMVA{
 namespace Preprocessing{
     /*
      * Template this class so that it works with all datatypes
      */
-    class TransformationBase : public TObject {
+    class TransformationBase : public TNamed {
         public:
         /*
          * How to enable running this on very large datasets?
