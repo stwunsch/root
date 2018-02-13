@@ -10,6 +10,11 @@ MinMaxScaler::MinMaxScaler(){
     fScaleMax = 1.0;
 }
 
+MinMaxScaler::MinMaxScaler(Float_t scaleMin, Float_t scaleMax){
+    fScaleMin = scaleMin;
+    fScaleMax = scaleMax;
+}
+
 void MinMaxScaler::Fit(Float_t* inputs, UInt_t numSamples, UInt_t numFeatures){
     fNumFeatures = numFeatures;
     fFeatureMin = std::vector<Float_t>(fNumFeatures, std::numeric_limits<Float_t>::max());
@@ -24,7 +29,7 @@ void MinMaxScaler::Fit(Float_t* inputs, UInt_t numSamples, UInt_t numFeatures){
     }
 }
 
-void MinMaxScaler::Print(){
+void MinMaxScaler::Debug(){
     for(UInt_t i=0; i<GetNumFeatures(); i++){
         std::cout << "Feature: " << i+1 << ", Min/Max: " << fFeatureMin[i] << "/" << fFeatureMax[i] << std::endl;
     }

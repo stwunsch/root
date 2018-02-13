@@ -7,6 +7,8 @@
 
 #pragma link C++ nestedclass;
 
+#pragma link C++ class TMVA::Preprocessing::TransformationBase+;
+#pragma link C++ class TMVA::Preprocessing::MinMaxScaler+;
 
 #pragma link C++ class TMVA::Configurable+;
 #pragma link C++ class TMVA::Event+;
