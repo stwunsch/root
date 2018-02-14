@@ -1,1 +1,22 @@
 - everything coming out of TDFs will be column-wise ordered, but every third-party package expects row-wise ordered inputs
+
+### High-level guideline ###
+
+Dogma: Support users doing ML in physics applications
+
+Explanation: Most ML related packages focus on the training of the methods and solve this nicely. But as well an increasingly severe problem for HEP will be the processing of tons of data in the application phase. To keep the turn-around cycles for analysts low, this has to be solved efficiently for the upcoming analyses.
+
+### Dos and Donts ###
+
+Dos:
+- Take into account landscape of modern ML libraries (TensorFlow, PyTorch, xgboost, ...)
+- Focus on efficient application of ML methods
+- Data-loading from ROOT files using TDFs
+- Provide easy to use interfaces from python (numpy) and cpp (standard types)
+- Implement application interfaces accessible from python and cpp with the same model files
+- Test performance rigorously in batch processing and event-by-event processing
+- Provide code for fair comparison between methods
+
+Donts:
+- Being another ML library amongst many with much less manpower
+- Focus too much on the training of ML methods (better try to provide everything around)
