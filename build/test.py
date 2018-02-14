@@ -15,17 +15,13 @@ if __name__ == "__main__":
     # Read out matrix
     tdf = ROOT.Experimental.TDataFrame("TreeS", "tmva_class_example.root")
 
-    x = np.zeros((6000, 4), dtype=np.float32)
+    x_flat = np.zeros(24000, dtype=np.float32)
     for i_var, var in enumerate(["var1", "var2", "var3", "var4"]):
         for i_event, event in enumerate(tdf.TakeFloat(var)):
-            x[i_event, i_var] = event
+            x_flat[4*i_event+i_var] = event
 
-    # Flatten matrix
-    # NOTE: How to be sure that the array is contiguous as expected?
-    # E.g., np.reshape returns only a view of the array.
-    x_flat = np.ascontiguousarray(x.reshape(6000*4))
-    #print("Is contiguous: {}".format(x_flat.flags['C_CONTIGUOUS']))
     plot(x_flat.reshape(6000, 4), "original")
+    print(x_flat[:4])
 
     # Prepare transformation
     ROOT.TMVA.Tools.Instance()
@@ -35,7 +31,8 @@ if __name__ == "__main__":
     # Run transformation
     scaler.Transform(x_flat, 6000)
     plot(x_flat.reshape(6000, 4), "transform")
+    print(x_flat[:4])
 
     # Store object to ROOT file
     scaler.SetName("my_transformation")
-    scaler.SaveAs("transformation.root")
+    scaler.SaveAs("from_python.root")

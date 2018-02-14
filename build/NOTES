@@ -1,0 +1,1 @@
+- everything coming out of TDFs will be column-wise ordered, but every third-party package expects row-wise ordered inputs
