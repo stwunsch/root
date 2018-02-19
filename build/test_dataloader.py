@@ -56,9 +56,18 @@ elif args.mode == "root_pandas":
     print("root_pandas")
     x = read_root(args.file, "TreeS").as_matrix()
 
+elif args.mode == "test_dataloader":
+    f = ROOT.TFile(args.file)
+    t = f.Get("TreeS")
+    d = ROOT.TMVA.Test.Dataloader(t)
+    x = np.zeros(t.GetEntries() * 4, dtype=np.float32)
+    d.Fill(x)
+    x = np.reshape(x, (t.GetEntries(), 4))
+
 elif args.mode == "future":
     tdf = ROOT.Experimental.TDataFrame("TreeS", args.file)
     x = tdf.Take(["var1", "var2", "var3", "var4"])
 
 print(x.flags)
+print(x.shape)
 print(x)
