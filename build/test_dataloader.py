@@ -45,11 +45,9 @@ elif args.mode == "tdf":
 
 elif args.mode == "root_numpy":
     print("root_numpy")
-    f = ROOT.TFile(args.file)
-    t = f.Get("TreeS")
     x = np.array([
-        list(x) for x in root_numpy.tree2array(
-            t, branches=["var1", "var2", "var3", "var4"])
+        list(x) for x in root_numpy.root2array(
+            args.file, "TreeS", branches=["var1", "var2", "var3", "var4"])
     ])
 
 elif args.mode == "future":
