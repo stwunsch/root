@@ -3,6 +3,7 @@ import ROOT
 import sys
 import argparse
 import root_numpy
+from root_pandas import read_root
 
 parser = argparse.ArgumentParser(description="Test TDFs as dataloader.")
 parser.add_argument("file", type=str, help="Test file")
@@ -49,6 +50,11 @@ elif args.mode == "root_numpy":
         list(x) for x in root_numpy.root2array(
             args.file, "TreeS", branches=["var1", "var2", "var3", "var4"])
     ])
+
+elif args.mode == "root_pandas":
+    print("root_pandas")
+    df = read_root(args.file, "TreeS")
+    x = df.as_matrix()
 
 elif args.mode == "future":
     tdf = ROOT.Experimental.TDataFrame("TreeS", args.file)
