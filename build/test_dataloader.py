@@ -54,8 +54,7 @@ elif args.mode == "root_numpy":
 
 elif args.mode == "root_pandas":
     print("root_pandas")
-    df = read_root(args.file, "TreeS")
-    x = df.as_matrix()
+    x = read_root(args.file, "TreeS").as_matrix()
 
 elif args.mode == "future":
     tdf = ROOT.Experimental.TDataFrame("TreeS", args.file)
