@@ -21,4 +21,9 @@ elif sys.argv[1] == "classic":
         x[i_event,3] = t.var4
     f.Close()
 
+elif sys.argv[1] == "future":
+    tdf = ROOT.Experimental.TDataFrame("TreeS", "tmva_class_example.root")
+    x = tdf.Take(["var1", "var2", "var3", "var4"])
+
+
 print(x)
