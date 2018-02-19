@@ -9,7 +9,8 @@ parser = argparse.ArgumentParser(description="Test TDFs as dataloader.")
 parser.add_argument("file", type=str, help="Test file")
 parser.add_argument("mode", type=str, help="Testing mode")
 parser.add_argument(
-    "num_threads",
+    "--num-threads",
+    default=1,
     type=int,
     help="Number of threads to be used by ROOT's implicit multi-threading")
 args = parser.parse_args()
