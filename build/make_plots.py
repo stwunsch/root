@@ -62,4 +62,5 @@ tdf = [
 plt.errorbar(threads, np.mean(tdf, axis=1), np.std(tdf, axis=1), fmt="+")
 plt.xlabel("Number of threads")
 plt.ylabel("Elapsed time in seconds")
-plt.title("Loading 2.8GB of data from disk to memory.\nArray of random floats with shape (2e8, 4)")
+plt.title("Loading 2.8GB of data from disk to memory.")
+plt.savefig("threads2.pdf", bbox_inches="tight")
