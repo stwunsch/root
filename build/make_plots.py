@@ -43,3 +43,23 @@ plt.ylabel("Elapsed time in seconds")
 plt.title("Performance subject to input data size and number of threads")
 plt.legend(loc=1, bbox_to_anchor=(1.9, 1.00))
 plt.savefig("size.pdf", bbox_inches="tight")
+
+plt.figure(3, figsize=(3,3))
+threads = [1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20]
+tdf = [
+        [57.7, 57.5, 59.4, 54.9, 58.6],
+        [50.5, 54.5, 51.8, 48.3, 48.4],
+        [47.7, 39.9, 32.7, 40.4, 39.8],
+        [37.8, 38.6, 41.3, 36.4, 31.9],
+        [37.1, 31.4, 34.8, 29.8, 32.4],
+        [33.2, 33.3, 41.5, 33.8, 31.2],
+        [27.2, 27.4, 23.5, 31.5, 18.5],
+        [15.1, 15.8, 15.5, 13.0, 16.9],
+        [20.2, 26.7, 25.8, 28.4, 24.9],
+        [19.9, 18.7, 18.0, 20.2, 17.2],
+        [17.0, 19.7, 19.2, 20.2, 18.1],
+        ]
+plt.errorbar(threads, np.mean(tdf, axis=1), np.std(tdf, axis=1), fmt="+")
+plt.xlabel("Number of threads")
+plt.ylabel("Elapsed time in seconds")
+plt.title("Loading 2.8GB of data from disk to memory.\nArray of random floats with shape (2e8, 4)")
