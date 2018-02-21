@@ -64,6 +64,14 @@ elif args.mode == "test_dataloader":
     d.Fill(x)
     x = np.reshape(x, (t.GetEntries(), 4))
 
+elif args.mode == "test_dataloader2":
+    f = ROOT.TFile(args.file)
+    t = f.Get("TreeS")
+    d = ROOT.TMVA.Test.Dataloader()
+    x = np.empty(t.GetEntries() * 4, dtype=np.float32)
+    d.Fill(x, args.file, "TreeS")
+    x = np.reshape(x, (t.GetEntries(), 4))
+
 elif args.mode == "future":
     tdf = ROOT.Experimental.TDataFrame("TreeS", args.file)
     x = tdf.Take(["var1", "var2", "var3", "var4"])

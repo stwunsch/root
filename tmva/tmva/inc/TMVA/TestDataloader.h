@@ -9,7 +9,8 @@ namespace Test{
         public:
         Dataloader();
         Dataloader(TTree* tree);
-        void Fill(float* x);
+        void Fill(float*);
+        void Fill(float*, const std::string&, const std::string&);
 
         private:
         TTree* fTree;
