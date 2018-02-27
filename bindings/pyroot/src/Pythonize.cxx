@@ -16,6 +16,18 @@
 #include "TMemoryRegulator.h"
 #include "Utility.h"
 
+// Numpy
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <numpy/arrayobject.h>
+#include <iostream>
+#include "TMVA/TestDataloader.h"
+#include "TMatrix.h"
+
+void init_numpy()
+{
+import_array();
+}
+
 // ROOT
 #include "TClass.h"
 #include "TFunction.h"
@@ -2273,6 +2285,66 @@ namespace {
 } // unnamed namespace
 
 
+// numpy testing
+PyObject* TestFunctionData( ObjectProxy* self ) {
+    /*
+    TestFunction* cls = (TestFunction*)
+        OP2TCLASS(self)->DynamicCast( TestFunction::Class(), self->GetObject() );
+    */
+
+    /*
+    PyObject* array = PyArray_SimpleNewFromData(
+        cls->numDims, (npy_intp*) cls->dims, NPY_FLOAT32, cls->data);
+    */
+    int dims[2] = {1,1};
+    PyObject* array = PyArray_ZEROS(
+       2, (npy_intp*) dims, NPY_FLOAT32, 0);
+    return array;
+}
+
+
+PyObject* TTensorInterface( ObjectProxy* self ){
+      PyObject* dict = PyDict_New();
+      PyDict_SetItemString(dict, "version", PyLong_FromLong(3));
+      PyDict_SetItemString(dict, "typestr", PyString_FromString("<f4"));
+      PyObject* dim0 = PyObject_CallMethod((PyObject*)self, "GetDim", "(i)", 0);
+      PyObject* dim1 = PyObject_CallMethod((PyObject*)self, "GetDim", "(i)", 1);
+      PyDict_SetItemString(dict, "shape",
+             PyTuple_Pack(2, dim0, dim1));
+      PyDict_SetItemString(dict, "data",
+             PyTuple_Pack(2, PyObject_CallMethod((PyObject*)self, "GetPointer", ""), Py_False));
+      PyObject_SetAttrString((PyObject*) self, "__array_interface__", dict);
+      Py_INCREF( Py_None );
+      return Py_None;
+}
+
+PyObject* TMatrixInterface( ObjectProxy* self ){
+      PyObject* dict = PyDict_New();
+      PyDict_SetItemString(dict, "version", PyLong_FromLong(3));
+      PyDict_SetItemString(dict, "typestr", PyString_FromString("<f4"));
+      PyObject* dim0 = PyObject_CallMethod((PyObject*)self, "GetNrows", "");
+      PyObject* dim1 = PyObject_CallMethod((PyObject*)self, "GetNcols", "");
+      PyDict_SetItemString(dict, "shape",
+             PyTuple_Pack(2, dim0, dim1));
+      PyDict_SetItemString(dict, "data",
+             PyTuple_Pack(2, PyObject_CallMethod((PyObject*)self, "GetPointer", ""), Py_False));
+      PyObject_SetAttrString((PyObject*) self, "__array_interface__", dict);
+      Py_INCREF( Py_None );
+      return Py_None;
+}
+
+PyObject* TestFunctionProcess( ObjectProxy* self, PyObject* obj ) {
+    Py_INCREF( Py_None );
+    return Py_None;
+}
+
+PyObject* ToNumpy( ObjectProxy* self ) {
+   auto data = (std::vector<float>*) self->GetObject();
+   npy_intp dims[1] = {data->size()};
+   PyObject* array = PyArray_SimpleNewFromData(1, dims, NPY_FLOAT32, data->data());
+   return array;
+}
+
 //- public functions -----------------------------------------------------------
 Bool_t PyROOT::Pythonize( PyObject* pyclass, const std::string& name )
 {
@@ -2372,6 +2444,20 @@ Bool_t PyROOT::Pythonize( PyObject* pyclass, const std::string& name )
 
    }
 
+   else if ( name == "TestFunction" ) {
+      init_numpy();
+      Utility::AddToClass( pyclass, "Data", (PyCFunction) TestFunctionData, METH_NOARGS );
+      //Utility::AddToClass( pyclass, "Process", (PyCFunction) TestFunctionProcess, METH_O );
+   }
+
+   else if ( name == "TTensor" ) {
+      Utility::AddToClass( pyclass, "enable_array_interface", (PyCFunction) TTensorInterface, METH_NOARGS );
+   }
+
+   else if ( name == "TMatrixT<float>" ) {
+      Utility::AddToClass( pyclass, "enable_array_interface", (PyCFunction) TMatrixInterface, METH_NOARGS );
+   }
+
    else if ( name == "TClass" ) {
    // make DynamicCast return a usable python object, rather than void*
       Utility::AddToClass( pyclass, "_TClass__DynamicCast", "DynamicCast" );
@@ -2429,6 +2515,8 @@ Bool_t PyROOT::Pythonize( PyObject* pyclass, const std::string& name )
    }
 
    else if ( IsTemplatedSTLClass( name, "vector" ) ) {
+      init_numpy();
+      Utility::AddToClass( pyclass, "ToNumpy", (PyCFunction) ToNumpy, METH_NOARGS );
 
       if ( HasAttrDirect( pyclass, PyStrings::gLen ) && HasAttrDirect( pyclass, PyStrings::gAt ) ) {
          Utility::AddToClass( pyclass, "_vector__at", "at" );

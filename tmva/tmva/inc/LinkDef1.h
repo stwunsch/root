@@ -10,6 +10,7 @@
 #pragma link C++ class TMVA::Preprocessing::TransformationBase+;
 #pragma link C++ class TMVA::Preprocessing::MinMaxScaler+;
 #pragma link C++ class TMVA::Test::Dataloader+;
+#pragma link C++ class TTensor+;
 
 #pragma link C++ class TMVA::Configurable+;
 #pragma link C++ class TMVA::Event+;

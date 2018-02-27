@@ -109,6 +109,7 @@ public:
 
    virtual const Element *GetMatrixArray  () const;
    virtual       Element *GetMatrixArray  ();
+   virtual       long    GetPointer();
    virtual const Int_t   *GetRowIndexArray() const { return 0; }
    virtual       Int_t   *GetRowIndexArray()       { return 0; }
    virtual const Int_t   *GetColIndexArray() const { return 0; }
@@ -221,6 +222,7 @@ template <> TClass *TMatrixT<double>::Class();
 
 template <class Element> inline const Element           *TMatrixT<Element>::GetMatrixArray() const { return fElements; }
 template <class Element> inline       Element           *TMatrixT<Element>::GetMatrixArray()       { return fElements; }
+template <class Element> inline       long              TMatrixT<Element>::GetPointer()       { return reinterpret_cast<long>(fElements); }
 
 template <class Element> inline       TMatrixT<Element> &TMatrixT<Element>::Use           (Int_t nrows,Int_t ncols,Element *data)
                                                                                           { return Use(0,nrows-1,0,ncols-1,data); }
