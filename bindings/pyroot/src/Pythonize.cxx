@@ -46,6 +46,9 @@
 #include "TVector.h"
 #include "ROOT/TVec.hxx"
 
+#include "TNumpyConverter.h"
+#include <iostream>
+
 // Standard
 #include <stdexcept>
 #include <string>
@@ -2264,6 +2267,23 @@ namespace {
       return BindCppObject( addr, (Cppyy::TCppType_t)Cppyy::GetScope( "TObject" ), kFALSE );
    }
 
+   //- Add numpy to ROOT object converters -------------
+   template <typename dtype>
+   PyObject* GetAttributes(ObjectProxy *self, PyObject* obj){
+      PyObject* interface = PyObject_GetAttrString(obj, "__array_interface__");
+      PyObject* data_tuple = PyDict_GetItemString(interface, "data");
+      PyObject* data_obj = PyTuple_GetItem(data_tuple, 0);
+      long data = PyLong_AsLong(data_obj);
+      // NOTE: add decrefs. there are some borrowed references? check this.
+
+      TNumpyConverter<dtype> *c = (TNumpyConverter<dtype> *)(self->GetObject());
+      c->SetData(reinterpret_cast<dtype *>(data));
+      c->SetDims({2});
+
+      Py_INCREF( Py_None );
+      return Py_None;
+   }
+
    //- Adding array interface to classes ---------------
    void AddArrayInterface(PyObject *pyclass, PyCFunction func)
    {
@@ -2775,6 +2795,12 @@ Bool_t PyROOT::Pythonize( PyObject* pyclass, const std::string& name )
          AddArrayInterface(pyclass, (PyCFunction)TVecArrayInterface<long, 8, 'i'>);
       } else if (name.find("<unsigned long>") != std::string::npos) {
          AddArrayInterface(pyclass, (PyCFunction)TVecArrayInterface<unsigned long, 8, 'u'>);
+      }
+   }
+
+   else if (name.find("TNumpyConverter") != std::string::npos) {
+      if (name.find("<float>") != std::string::npos) {
+         Utility::AddToClass( pyclass, "GetAttributes", (PyCFunction) GetAttributes<float>, METH_O );
       }
    }
 
