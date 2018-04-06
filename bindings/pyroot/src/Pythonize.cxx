@@ -42,6 +42,8 @@
 #include "TStreamerElement.h"
 #include "TStreamerInfo.h"
 
+#include "TNumpyConverter.h"
+
 // Standard
 #include <stdexcept>
 #include <string>
@@ -2270,6 +2272,30 @@ namespace {
       return PyInt_FromLong( 2 );
    }
 
+
+//- Extract infromation about numpy array from array interface -------------
+   template <typename dtype>
+   PyObject* GetAttributes(ObjectProxy *self, PyObject* obj){
+      PyObject* interface = PyObject_GetAttrString(obj, "__array_interface__");
+
+      PyObject* data_tuple = PyDict_GetItemString(interface, "data");
+      PyObject* data_obj = PyTuple_GetItem(data_tuple, 0);
+      long data = PyLong_AsLong(data_obj);
+
+      PyObject* shape_tuple = PyDict_GetItemString(interface, "shape");
+      PyObject* size_obj = PyTuple_GetItem(shape_tuple, 0);
+      long size = PyLong_AsLong(size_obj); // easy to extend to any dimension
+      // NOTE: add decrefs. there are some borrowed references? check this.
+
+      TNumpyConverter<dtype> *c = (TNumpyConverter<dtype> *)(self->GetObject());
+      c->SetData(reinterpret_cast<dtype *>(data));
+      c->SetDims({size});
+
+      Py_INCREF( Py_None );
+      return Py_None;
+   }
+
+
 } // unnamed namespace
 
 
@@ -2644,6 +2670,12 @@ Bool_t PyROOT::Pythonize( PyObject* pyclass, const std::string& name )
       // __len__ is already set from GetSize()
       Utility::AddToClass( pyclass, "_getitem__unchecked", "__getitem__" );
       Utility::AddToClass( pyclass, "__getitem__", (PyCFunction) CheckedGetItem, METH_O );
+   }
+
+   else if (name.find("TNumpyConverter") != std::string::npos) {
+      if (name.find("<float>") != std::string::npos) {
+         Utility::AddToClass( pyclass, "GetAttributes", (PyCFunction) GetAttributes<float>, METH_O );
+      }
    }
 
 // Make RooFit 'using' member functions available (not supported by dictionary)
