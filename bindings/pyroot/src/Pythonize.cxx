@@ -42,8 +42,6 @@
 #include "TStreamerElement.h"
 #include "TStreamerInfo.h"
 
-#include "TMatrix.h"
-#include "TVector.h"
 #include "ROOT/TVec.hxx"
 
 // Standard
