@@ -250,17 +250,12 @@ def _proxy__array_interface__(self):
             type(self), getter_array_interface))
 
 for pyclass in [
-        "TVectorT<{DTYPE}>",
-        "TMatrixT<{DTYPE}>",
-        "std::vector<{DTYPE}>",
-        "Experimental::VecOps::TVec<{DTYPE}>"
+        "std::vector<{dtype}>",
+        "Experimental::VecOps::TVec<{dtype}>"
         ]:
-    if "TVectorT" in pyclass or "TMatrixT" in pyclass:
-        dtypes = ["float", "double"]
-    else:
-        dtypes = ["float", "double", "int", "unsigned int", "long", "unsigned long"]
+    dtypes = ["float", "double", "int", "unsigned int", "long", "unsigned long"]
     for dtype in dtypes:
-        class_scope = _root.CreateScopeProxy(pyclass.format(DTYPE=dtype))
+        class_scope = _root.CreateScopeProxy(pyclass.format(dtype=dtype))
         class_scope._proxy__array_interface__ = _proxy__array_interface__
         class_scope.__array_interface__ = property(class_scope._proxy__array_interface__)
 

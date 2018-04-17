@@ -2285,33 +2285,6 @@ namespace {
    }
 
    template <typename dtype, UInt_t bytes, char typestr>
-   PyObject *TMatrixArrayInterface(ObjectProxy *self)
-   {
-      TMatrixT<dtype> *cobj = (TMatrixT<dtype> *)(self->GetObject());
-
-      PyObject *dict = FillArrayInterfaceDict(bytes, typestr);
-      PyDict_SetItemString(dict, "shape",
-                           PyTuple_Pack(2, PyLong_FromLong(cobj->GetNrows()), PyLong_FromLong(cobj->GetNcols())));
-      PyDict_SetItemString(dict, "data",
-                           PyTuple_Pack(2, PyLong_FromLong(reinterpret_cast<long>(cobj->GetMatrixArray())), Py_False));
-
-      return dict;
-   }
-
-   template <typename dtype, UInt_t bytes, char typestr>
-   PyObject *TVectorArrayInterface(ObjectProxy *self)
-   {
-      TVectorT<dtype> *cobj = (TVectorT<dtype> *)(self->GetObject());
-
-      PyObject *dict = FillArrayInterfaceDict(bytes, typestr);
-      PyDict_SetItemString(dict, "shape", PyTuple_Pack(1, PyLong_FromLong(cobj->GetNoElements())));
-      PyDict_SetItemString(dict, "data",
-                           PyTuple_Pack(2, PyLong_FromLong(reinterpret_cast<long>(cobj->GetMatrixArray())), Py_False));
-
-      return dict;
-   }
-
-   template <typename dtype, UInt_t bytes, char typestr>
    PyObject *STLVectorArrayInterface(ObjectProxy *self)
    {
       std::vector<dtype> *cobj = (std::vector<dtype> *)(self->GetObject());
@@ -2730,13 +2703,6 @@ Bool_t PyROOT::Pythonize( PyObject* pyclass, const std::string& name )
       Utility::AddToClass( pyclass, "__len__", "GetNoElements" );
       Utility::AddToClass( pyclass, "_getitem__unchecked", "__getitem__" );
       Utility::AddToClass( pyclass, "__getitem__", (PyCFunction) CheckedGetItem, METH_O );
-
-      // add array interface
-      if (name.find("<float>") != std::string::npos) {
-         AddArrayInterface(pyclass, (PyCFunction)TVectorArrayInterface<float, 4, 'f'>);
-      } else if (name.find("<double>") != std::string::npos) {
-         AddArrayInterface(pyclass, (PyCFunction)TVectorArrayInterface<double, 8, 'f'>);
-      }
    }
 
    else if ( name.substr(0,6) == "TArray" && name != "TArray" ) {    // allow proper iteration
@@ -2751,15 +2717,6 @@ Bool_t PyROOT::Pythonize( PyObject* pyclass, const std::string& name )
 
    else if ( name == "RooSimultaneous" )
       Utility::AddUsingToClass( pyclass, "plotOn" );
-
-   else if (name.find("TMatrixT") != std::string::npos) {
-      // add array interface
-      if (name.find("<float>") != std::string::npos) {
-         AddArrayInterface(pyclass, (PyCFunction)TMatrixArrayInterface<float, 4, 'f'>);
-      } else if (name.find("<double>") != std::string::npos) {
-         AddArrayInterface(pyclass, (PyCFunction)TMatrixArrayInterface<double, 8, 'f'>);
-      }
-   }
 
    else if (name.find("TVec<") != std::string::npos) {
       // add array interface
