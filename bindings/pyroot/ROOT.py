@@ -275,25 +275,39 @@ def _TTreeAsMatrix(self, columns=None, dtype="double"):
     if columns is None:
         columns = [branch.GetName() for branch in self.GetListOfBranches()]
 
-    # Check that all given columns exist
+    # Check validity of branches
+    supported_branch_dtypes = ["Float_t", "Double_t", "Char_t", "UChar_t", "Short_t", "UShort_t",
+            "Int_t", "UInt_t", "Long64_t", "ULong64_t"]
+    col_dtypes = []
     for col in columns:
+        # Check that column exists
         branch = self.GetBranch(col)
         if branch == None:
             raise Exception("Tree {} has no branch {}.".format(self.GetName(), col))
 
+        # Check that the branch has only one leaf with the name of the branch
+        leaves = [leaf.GetName() for leaf in branch.GetListOfLeaves()]
+        if len(leaves) != 1:
+            raise Exception("Branch {} has more than one leaf.".format(col))
+        if leaves[0] != col:
+            raise Exception("Leave {} has not the same name than the branch {}.".format(leaves[0], col))
+
+        # Check that the leaf of the branch has an arithmetic data-type
+        col_dtype = self.GetBranch(col).GetLeaf(col).GetTypeName()
+        if not col_dtype in supported_branch_dtypes:
+            raise Exception("Branch {} has unsupported data-type {}.".format(col, col_dtype))
+        col_dtypes.append(col_dtype)
+
     # Check that given data-type is supported
-    supported_dtypes = ["int", "unsigned int", "long", "unsigned long", "float", "double"]
-    if not dtype in supported_dtypes:
+    supported_output_dtypes = ["int", "unsigned int", "long", "unsigned long", "float", "double"]
+    if not dtype in supported_output_dtypes:
         raise Exception("Data-type {} is not supported, select from {}.".format(
-            dtype, supported_dtypes))
+            dtype, supported_output_dtypes))
 
     # Convert columns interable to std.vector("string")
     columns_vector = _root.std.vector("string")(len(columns))
     for i, col in enumerate(columns):
         columns_vector[i] = col
-
-    # Get data-types of columns
-    col_dtypes = [self.GetLeaf(col).GetTypeName() for col in columns]
 
     # Allocate memory for the read-out
     flat_matrix = _root.std.vector(dtype)(self.GetEntries()*len(columns))

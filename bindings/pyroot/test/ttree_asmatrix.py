@@ -25,6 +25,14 @@ class TTreeAsMatrix(unittest.TestCase):
                 var = np.empty(1, dtype=np.uint64)
             elif "S" in dtype:
                 var = np.empty(1, dtype=np.int16)
+            elif "s" in dtype:
+                var = np.empty(1, dtype=np.uint16)
+            elif "B" in dtype:
+                var = np.empty(1, dtype=np.int8)
+            elif "b" in dtype:
+                var = np.empty(1, dtype=np.uint8)
+            elif "O" in dtype:
+                var = np.empty(1, dtype=np.uint8)
             else:
                 raise Exception(
                     "Type {} not known to create branch.".format(dtype))
@@ -101,6 +109,18 @@ class TTreeAsMatrix(unittest.TestCase):
         except Exception as exception:
             self.assertEqual("Tree test has no entries.", exception.args[0])
 
+    def test_multiple_leaves(self):
+        tree = ROOT.TTree("test", "description")
+        var = np.ones(2, np.float32)
+        tree.Branch("col", var, "sub1/F:sub2/F")
+        tree.Fill()
+        try:
+            tree.AsMatrix(["col"])
+            self.assertFail()
+        except Exception as exception:
+            self.assertEqual("Branch col has more than one leaf.",
+                             exception.args[0])
+
     def test_dtype_conversion(self):
         numpy_dtype = {
             "unsigned int": np.dtype(np.uint32),
@@ -115,6 +135,19 @@ class TTreeAsMatrix(unittest.TestCase):
         for dtype in numpy_dtype:
             matrix_ttree = tree.AsMatrix(dtype=dtype)
             self.assertEqual(matrix_ttree.dtype.name, numpy_dtype[dtype].name)
+
+    def test_branch_dtypes(self):
+        root_dtypes = ["B", "b", "S", "s", "I", "i", "L", "l", "F", "D"]
+        tree, _, _, col_names, _ = self.make_tree(*root_dtypes)
+        tree.AsMatrix()
+
+        try:
+            tree, _, _, col_names, _ = self.make_tree("O")
+            tree.AsMatrix()
+            self.assertFail()
+        except Exception as exception:
+            self.assertEqual("Branch col0 has unsupported data-type Bool_t.",
+                             exception.args[0])
 
 
 if __name__ == '__main__':
