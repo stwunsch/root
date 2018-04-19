@@ -260,7 +260,7 @@ for pyclass in [
         class_scope.__array_interface__ = property(class_scope._proxy__array_interface__)
 
 # TTree.AsMatrix functionality
-def _TTreeAsMatrix(self, columns=None, dtype="double"):
+def _TTreeAsMatrix(self, columns=None, exclude=None, dtype="double", return_labels=False):
     # Import numpy lazily
     try:
         import numpy as np
@@ -274,29 +274,59 @@ def _TTreeAsMatrix(self, columns=None, dtype="double"):
     # Get all columns of the tree if no columns are specified
     if columns is None:
         columns = [branch.GetName() for branch in self.GetListOfBranches()]
+    if not isinstance(columns, list):
+        raise Exception("Argument 'columns' has to be a list.")
+
+    # Exclude columns
+    if exclude == None:
+        exclude = []
+    if not isinstance(exclude, list):
+        raise Exception("Argument 'exclude' has to be a list.")
+    columns = [col for col in columns if not col in exclude]
 
     # Check validity of branches
     supported_branch_dtypes = ["Float_t", "Double_t", "Char_t", "UChar_t", "Short_t", "UShort_t",
             "Int_t", "UInt_t", "Long64_t", "ULong64_t"]
     col_dtypes = []
+    invalid_cols_notfound = []
+    invalid_cols_dtype = {}
+    invalid_cols_multipleleaves = {}
+    invalid_cols_leafname = {}
     for col in columns:
         # Check that column exists
         branch = self.GetBranch(col)
         if branch == None:
-            raise Exception("Tree {} has no branch {}.".format(self.GetName(), col))
+            invalid_cols_notfound.append(col)
+            continue
 
         # Check that the branch has only one leaf with the name of the branch
         leaves = [leaf.GetName() for leaf in branch.GetListOfLeaves()]
         if len(leaves) != 1:
-            raise Exception("Branch {} has more than one leaf.".format(col))
+            invalid_cols_multipleleaves[col] = len(leaves)
+            continue
         if leaves[0] != col:
-            raise Exception("Leave {} has not the same name than the branch {}.".format(leaves[0], col))
+            invalid_cols_leafname[col] = len(leaves[0])
+            continue
 
         # Check that the leaf of the branch has an arithmetic data-type
         col_dtype = self.GetBranch(col).GetLeaf(col).GetTypeName()
-        if not col_dtype in supported_branch_dtypes:
-            raise Exception("Branch {} has unsupported data-type {}.".format(col, col_dtype))
         col_dtypes.append(col_dtype)
+        if not col_dtype in supported_branch_dtypes:
+            invalid_cols_dtype[col] = col_dtype
+
+    if len(invalid_cols_notfound) != 0:
+        raise Exception("Tree {} has no branch {}.".format(self.GetName(), invalid_cols_notfound))
+    if len(invalid_cols_multipleleaves) != 0:
+        raise Exception("Branch {} has not exactly one leaf.".format([k for k in invalid_cols_multipleleaves]))
+    if len(invalid_cols_leafname) != 0:
+        raise Exception("Leave {} has not the same name than the branch {}.".format(
+            [k for k in invalid_cols_leafname], [invalid_cols_leafname[k] for k in invalid_cols_leafname]))
+    if len(invalid_cols_leafname) != 0:
+        raise Exception("Leave {} has not the same name than the branch {}.".format(
+            [k for k in invalid_cols_leafname], [invalid_cols_leafname[k] for k in invalid_cols_leafname]))
+    if len(invalid_cols_dtype) != 0:
+        raise Exception("Branch {} has unsupported data-type {}.".format(
+            [k for k in invalid_cols_dtype], [invalid_cols_dtype[k] for k in invalid_cols_dtype]))
 
     # Check that given data-type is supported
     supported_output_dtypes = ["int", "unsigned int", "long", "unsigned long", "float", "double"]
@@ -330,7 +360,10 @@ def _TTreeAsMatrix(self, columns=None, dtype="double"):
     reshaped_matrix_np = np.reshape(flat_matrix_np,
             (int(len(flat_matrix)/len(columns)), len(columns)))
 
-    return reshaped_matrix_np
+    if return_labels:
+        return (columns, reshaped_matrix_np)
+    else:
+        return reshaped_matrix_np
 
 _root.CreateScopeProxy( "TTree" ).AsMatrix = _TTreeAsMatrix
 

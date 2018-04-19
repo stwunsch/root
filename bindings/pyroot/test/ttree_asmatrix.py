@@ -63,6 +63,18 @@ class TTreeAsMatrix(unittest.TestCase):
         tree, _, _, col_names, _ = self.make_tree("F", "F")
         tree.AsMatrix(col_names)
 
+    def test_return_labels(self):
+        tree, _, _, col_names, _ = self.make_tree("F", "F")
+        labels, matrix = tree.AsMatrix(col_names, return_labels=True)
+        self.assertEqual(labels, col_names)
+
+    def test_exclude_columns(self):
+        tree, reference, _, _, _ = self.make_tree("F", "F")
+        matrix_ttree = tree.AsMatrix(exclude=["col0"])
+        matrix_ref = np.asarray([x[1] for x in reference])
+        for value_ttree, value_ref in zip(matrix_ttree, matrix_ref):
+            self.assertEqual(value_ttree, value_ref)
+
     def test_not_supported_dtype(self):
         tree, _, _, col_names, _ = self.make_tree("F", "F")
         try:
@@ -78,7 +90,8 @@ class TTreeAsMatrix(unittest.TestCase):
             tree.AsMatrix(["foo"])
             self.assertFail()
         except Exception as exception:
-            self.assertEqual("Tree test has no branch foo.", exception.args[0])
+            self.assertEqual("Tree test has no branch ['foo'].",
+                             exception.args[0])
 
     def test_shape(self):
         matrix_ttree, matrix_ref = self.make_example("F", "F")
@@ -118,7 +131,7 @@ class TTreeAsMatrix(unittest.TestCase):
             tree.AsMatrix(["col"])
             self.assertFail()
         except Exception as exception:
-            self.assertEqual("Branch col has more than one leaf.",
+            self.assertEqual("Branch ['col'] has not exactly one leaf.",
                              exception.args[0])
 
     def test_dtype_conversion(self):
@@ -144,9 +157,26 @@ class TTreeAsMatrix(unittest.TestCase):
         try:
             tree, _, _, col_names, _ = self.make_tree("O")
             tree.AsMatrix()
+        except Exception as exception:
+            self.assertEqual(
+                "Branch ['col0'] has unsupported data-type ['Bool_t'].",
+                exception.args[0])
+
+    def test_typecheck_arguments(self):
+        tree, reference, _, _, _ = self.make_tree("F", "F")
+
+        try:
+            matrix_ttree = tree.AsMatrix(columns=42)
             self.assertFail()
         except Exception as exception:
-            self.assertEqual("Branch col0 has unsupported data-type Bool_t.",
+            self.assertEqual("Argument 'columns' has to be a list.",
+                             exception.args[0])
+
+        try:
+            matrix_ttree = tree.AsMatrix(exclude=42)
+            self.assertFail()
+        except Exception as exception:
+            self.assertEqual("Argument 'exclude' has to be a list.",
                              exception.args[0])
 
 
