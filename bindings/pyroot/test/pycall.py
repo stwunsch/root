@@ -15,10 +15,12 @@ def f(x):
 
 
 t.SetFunction(f)
+print("Apply (Python function): {}".format(f(x)))
+print("Apply (internal): {}".format(t.Apply(x)))
 
 # Benchmark internal call
 start = time()
-print("Apply (Python function): {}".format(t.Apply(x)))
+t.Apply(x)
 end = time()
 runtime_internal = end - start
 print("Runtime (internal): {}".format(runtime_internal))
