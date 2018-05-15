@@ -1750,6 +1750,17 @@ namespace PyROOT {      // workaround for Intel icc on Linux
       }
    };
 
+
+//- Test behavior -----------------------------------------------------------
+   float TestPyCallback( void* vpyfunc, Long_t /* npar */, float x ) {
+      PyObject* pyfunc = (PyObject*)vpyfunc;
+      PyObject* result = PyObject_CallFunction(pyfunc, (char*)"O", PyFloat_FromDouble((double)x));
+      float y = (float)PyFloat_AsDouble(result);
+      Py_XDECREF(result);
+      return y;
+   }
+
+
 //- TMinuit behavior ----------------------------------------------------------
    void TMinuitPyCallback( void* vpyfunc, Long_t /* npar */,
          Int_t& a0, Double_t* a1, Double_t& a2, Double_t* a3, Int_t a4 ) {
@@ -1991,6 +2002,55 @@ namespace {
    PyObject* TFunctionCall( ObjectProxy*& self, PyObject* args ) {
       return TFunctionHolder( Cppyy::gGlobalScope, (Cppyy::TCppMethod_t)self->GetObject() ).Call( self, args, 0 );
    }
+
+
+//- Test behavior -----------------------------------------------------------
+   class TestSetFunction: public TPretendInterpreted {
+   public:
+      TestSetFunction( int nArgs = 1 ) : TPretendInterpreted( nArgs ) {}
+
+   public:
+      virtual PyObject* GetSignature() { return PyROOT_PyUnicode_FromString( "(PyObject* callable)" ); }
+
+      virtual PyObject* Call( ObjectProxy*& self, PyObject* args, PyObject* , TCallContext* ){
+         // Get python function as PyObject
+         PyObject* pyfunc = PyTuple_GET_ITEM( args, 0 );
+         if ( ! IsCallable( pyfunc ) ) {
+            return 0;
+         }
+
+         // Set up the expected signature of the function and create a callback, which
+         // calls the actual python function.
+         // The wrapper function returns a C++ function pointer provided by cling wrapping the
+         // Python function call.
+         std::vector<std::string> signature = {"float"};
+         void* fptr = Utility::CreateWrapperMethod(
+            pyfunc, 1, "float", signature, "TestPyCallback" );
+         if ( ! fptr /* PyErr was set */ ) {
+            return 0;
+         }
+
+         // Get the method, which takes the C++ function as argument
+         MethodProxy* method =
+            (MethodProxy*)PyObject_GetAttrString( (PyObject*)self, "SetFunction" );
+
+         // Call the C++ method with the C++ function pointer (see `TestPyCallback`)
+         PyObject* newArgs = PyTuple_New( 1 );
+         PyTuple_SET_ITEM( newArgs, 0, PyROOT_PyCapsule_New( fptr, NULL, NULL ) ); // This calls `PyCObject_FromVoidPtr`
+         PyObject* result = PyObject_CallObject( (PyObject*)method, newArgs );
+
+         return result;
+      }
+
+      virtual PyObject* GetPrototype()
+      {
+         return PyROOT_PyUnicode_FromString(
+            "Test::SetFunction(PyObject* callable)" );
+      }
+
+      virtual PyObject* GetScopeProxy() { return CreateScopeProxy( "Test" ); }
+      virtual PyCallable* Clone() { return new TestSetFunction( *this ); }
+   };
 
 
 //- TMinuit behavior -----------------------------------------------------------
@@ -2411,7 +2471,11 @@ Bool_t PyROOT::Pythonize( PyObject* pyclass, const std::string& name )
 
 //- class name based pythonization ---------------------------------------------
 
-   if ( name == "TObject" ) {
+   if ( name == "Test" ){
+      Utility::AddToClass( pyclass, "SetFunction", new TestSetFunction );
+   }
+
+   else if ( name == "TObject" ) {
    // support for the 'in' operator
       Utility::AddToClass( pyclass, "__contains__", (PyCFunction) TObjectContains, METH_O );
 
