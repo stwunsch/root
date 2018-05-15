@@ -9,7 +9,8 @@ float TestFunction(float x){
 
 class Test {
 public:
-    Test(){
+    Test(int n){
+        numCalls = n;
         function = TestFunction;
     }
 
@@ -18,10 +19,12 @@ public:
     }
 
     float Apply(float x){
+        for(int i=0; i<numCalls-1; i++) (*function)(x);
         return (*function)(x);
     }
 
 private:
+    int numCalls;
     float (*function)(float);
 };
 
