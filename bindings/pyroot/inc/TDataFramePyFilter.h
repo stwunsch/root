@@ -31,12 +31,15 @@ ROOT::Experimental::TDF::TInterface<ROOT::Detail::TDF::TJittedFilter> *ConvertTD
    return reinterpret_cast<ROOT::Experimental::TDF::TInterface<ROOT::Detail::TDF::TJittedFilter> *>(p);
 }
 
-TDF::TInterface<ROOT::Detail::TDF::TJittedFilter> TDataFramePyFilter(TDataFrame &df, PyObject *f)
+TDF::TInterface<ROOT::Detail::TDF::TJittedFilter> TDataFramePyFilter(TDataFrame &df, PyObject *f, bool lockGil)
 {
-   auto l = [f](float x) {
+   auto l = [f, lockGil](float x) {
+      PyGILState_STATE gstate;
+      if(lockGil) gstate = PyGILState_Ensure();
       PyObject *pyret = PyObject_CallFunction(f, (char *)"f", x);
       bool ret = PyObject_IsTrue(pyret);
       Py_XDECREF(pyret);
+      if(lockGil) PyGILState_Release(gstate);
       return ret;
    };
 

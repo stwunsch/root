@@ -29,7 +29,7 @@ if __name__ == "__main__":
     # Create tree
     fileName = "tdf001_introduction_py.root"
     treeName = "myTree"
-    numEntries = 1e7
+    numEntries = 5e6
     if args.create:
         fill_tree(treeName, fileName, numEntries)
 

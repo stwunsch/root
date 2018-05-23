@@ -242,8 +242,9 @@ def _TDataFramePyFilter( self, f, columns ):
     f_ptr = id(f)
     jit_code = """
     PyROOT::TDataFramePyFilter(
-            *reinterpret_cast<ROOT::Experimental::TDataFrame*>(%s),
-            reinterpret_cast<PyObject*>(%s));
+            *reinterpret_cast<ROOT::Experimental::TDataFrame*>(%s), // Dataframe
+            reinterpret_cast<PyObject*>(%s), // Python callable
+            true); // Lock GIL
     """ % (df_ptr, f_ptr)
     node_ptr = _root.gInterpreter.Calc(jit_code)
     new_node = _root.PyROOT.ConvertTDataFramePyFilter(node_ptr)
