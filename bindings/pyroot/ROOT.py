@@ -226,6 +226,32 @@ sys.modules['ROOT.std'] = cppyy.gbl.std
 
 ### special case pythonization --------------------------------------------------
 
+# TDataFrame.Filter with Python callable
+def _TDataFramePyFilter( self, f, columns ):
+    # Get types of columns
+    dtypes = []
+    cols = _root.std.vector("string")()
+    format_str = _root.std.string()
+    for col in columns:
+        dtypes.append("float") # TODO
+        format_str.append("f") # TODO
+        cols.push_back(col)
+
+    # Construct TDataFrame with function calling a Python callable
+    df_ptr = _root.PyROOT.GetAddress(self)
+    f_ptr = id(f)
+    jit_code = """
+    PyROOT::TDataFramePyFilter(
+            *reinterpret_cast<ROOT::Experimental::TDataFrame*>(%s),
+            reinterpret_cast<PyObject*>(%s));
+    """ % (df_ptr, f_ptr)
+    node_ptr = _root.gInterpreter.Calc(jit_code)
+    new_node = _root.PyROOT.ConvertTDataFramePyFilter(node_ptr)
+
+    return new_node
+
+_root.CreateScopeProxy( "ROOT::Experimental::TDataFrame" ).PyFilter = _TDataFramePyFilter
+
 # TTree iterator
 def _TTree__iter__( self ):
    i = 0
