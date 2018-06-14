@@ -3,53 +3,73 @@
 
 #include <vector>
 #include <type_traits>
+#include "TMVA/Reader.h"
 
 namespace TMVA {
 
-/* Model base class */
+namespace Preprocessing {
+
+/* Preprocessing method base class */
 template <typename T>
-class Model {
+class IMethod {
 public:
-   virtual void Init() = 0;
+   virtual std::vector<T> Transform(const std::vector<T> &inputs) = 0;
+   virtual std::vector<T> InverseTransform(const std::vector<T> &inputs) = 0;
+   std::vector<T> operator()(std::vector<T> &inputs) { return Transform(inputs); };
+};
+
+/* Implementation of some preprocessing method */
+template <typename T>
+class SomeMethod : public IMethod<T> {
+public:
+   SomeMethod(std::string file) : fFile(file){};
+   std::vector<T> Transform(const std::vector<T> &inputs) { return inputs; };
+   std::vector<T> InverseTransform(const std::vector<T> &inputs) { return inputs; };
+
+private:
+   std::string fFile;
+};
+
+} // namespace Preprocessing
+
+namespace Application {
+
+/* MVA method base class */
+template <typename T>
+class IMethod {
+public:
    virtual std::vector<T> Predict(const std::vector<T> &inputs) = 0;
    std::vector<T> operator()(std::vector<T> &inputs) { return Predict(inputs); };
 };
 
-/* Implementation of some model */
+/* Implementation of some MVA method */
 template <typename T>
-class SomeModel : public Model<T> {
+class SomeMethod : public IMethod<T> {
 public:
+   SomeMethod(std::string file) : fFile(file)
+   {
+      std::vector<std::string> variables = {"var1", "var2", "var3", "var4"}; // TODO: extract from xml
+      fReader = new TMVA::Reader("!Color:Silent");
+      T dummy;
+      for (auto &var : variables)
+         fReader->AddVariable(var, &dummy);
+      fReader->BookMVA(fTag, fFile);
+   };
+
+   std::vector<T> Predict(const std::vector<T> &inputs)
+   {
+      return std::vector<float>({static_cast<T>(fReader->EvaluateMVA(inputs, fTag))});
+   }
+
+private:
+   const char *fTag = "SomeMethod";
    std::string fFile;
-   SomeModel(std::string file) : fFile(file){};
-   void Init(){};
-   std::vector<T> Predict(const std::vector<T> &inputs) { return std::vector<T>({inputs[0] * inputs[1]}); }
+   TMVA::Reader *fReader;
 };
 
-/* Predict interface to RDataFrame */
-template <typename T, typename... Inputs>
-class MakePredict {
-public:
-   Model<T> &fModel;
+} // namespace Application
 
-   MakePredict(Model<T> &model) : fModel(model) {}
-
-   std::vector<T> operator()(Inputs... inputs) { return fModel.Predict({inputs...}); }
-};
-
-template <int N, typename T, typename... Ts>
-struct MakePredictHelper {
-   using type = typename MakePredictHelper<N - 1, T, T, Ts...>::type;
-};
-
-template <typename T, typename... Ts>
-struct MakePredictHelper<0, T, Ts...> {
-   using type = MakePredict<T, Ts...>;
-};
-
-template <int NumVars, typename T>
-struct Predict {
-   using type = typename MakePredictHelper<NumVars, T>::type;
-};
+namespace Utility {
 
 /* Make vector */
 template <typename T, typename... Inputs>
@@ -71,5 +91,21 @@ template <int N, typename T>
 struct MakeVector {
    using type = typename MakeVectorHelper<N, T>::type;
 };
-}
+
+/* Combine methods */
+template <typename T>
+class Chain {
+public:
+   Chain(Preprocessing::IMethod<T> &transform, Application::IMethod<T> &model)
+      : fTransform(&transform), fModel(&model){};
+   std::vector<T> operator()(std::vector<T> &inputs) { return fModel->Predict(fTransform->Transform(inputs)); };
+
+private:
+   Preprocessing::IMethod<T> *fTransform = 0;
+   // Preprocessing::IMethod<T> *fInverseTransform = 0; // TODO: To be included
+   Application::IMethod<T> *fModel = 0;
+};
+
+} // namespace Utility
+} // namespace TMVA
 #endif
