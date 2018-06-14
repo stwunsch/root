@@ -5,6 +5,15 @@
 #include <string>
 #include <vector>
 
+/*
+ * To be solved:
+ * - Batch processing -> RTensor?
+ * - Processing of high-dimensional data?
+ */
+
+template <typename T>
+using RTensor = typename std::vector<std::vector<T>>;
+
 void test()
 {
    // Run multi-threaded
@@ -31,8 +40,14 @@ void test()
       "/home/stefan/root-dev/tmva/tmva/dataset/weights/TMVAClassification_Fisher.weights.xml");
 
    // Run single prediction
-   auto p = model.Predict(preprocessing.Transform({1.f, 2.f, 3.f, 4.f}));
+   std::vector<float> inputs = {1.f, 2.f, 3.f, 4.f};
+   auto p = model.Predict(preprocessing.Transform(inputs));
    std::cout << "Single prediction: " << p[0] << std::endl;
+
+   // Batch processing of inputs
+   RTensor<float> multipleInputs = {{1.f, 2.f, 3.f, 4.f}, {-1.f, -2.f, -3.f, -4.f}};
+   auto p2 = model.Predict(preprocessing.Transform(multipleInputs));
+   std::cout << "Batch prediction: " << p2[0][0] << ", " << p2[1][0] << std::endl;
 
    // Inference on dataframe (model only)
    auto df3 = df2.Define("predictions_nopreprocessing", model, {"inputs"});

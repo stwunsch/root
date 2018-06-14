@@ -2,7 +2,6 @@
 #define ROOT_TMVA_SomeModel
 
 #include <vector>
-#include <type_traits>
 #include "TMVA/Reader.h"
 
 namespace TMVA {
@@ -13,8 +12,12 @@ namespace Preprocessing {
 template <typename T>
 class IMethod {
 public:
+   virtual std::vector<std::vector<T>> Transform(const std::vector<std::vector<T>> &inputs) = 0;
    virtual std::vector<T> Transform(const std::vector<T> &inputs) = 0;
+
    virtual std::vector<T> InverseTransform(const std::vector<T> &inputs) = 0;
+   virtual std::vector<std::vector<T>> InverseTransform(const std::vector<std::vector<T>> &inputs) = 0;
+
    std::vector<T> operator()(std::vector<T> &inputs) { return Transform(inputs); };
 };
 
@@ -23,8 +26,18 @@ template <typename T>
 class SomeMethod : public IMethod<T> {
 public:
    SomeMethod(std::string file) : fFile(file){};
+
    std::vector<T> Transform(const std::vector<T> &inputs) { return inputs; };
+   std::vector<std::vector<T>> Transform(const std::vector<std::vector<T>> &inputs)
+   {
+      std::vector<std::vector<T>> results(inputs.size());
+      for (unsigned int i = 0; i < inputs.size(); i++)
+         results[i] = Transform(inputs[i]);
+      return results;
+   }
+
    std::vector<T> InverseTransform(const std::vector<T> &inputs) { return inputs; };
+   std::vector<std::vector<T>> InverseTransform(const std::vector<std::vector<T>> &inputs) { return inputs; };
 
 private:
    std::string fFile;
@@ -39,6 +52,7 @@ template <typename T>
 class IMethod {
 public:
    virtual std::vector<T> Predict(const std::vector<T> &inputs) = 0;
+   virtual std::vector<std::vector<T>> Predict(const std::vector<std::vector<T>> &inputs) = 0;
    std::vector<T> operator()(std::vector<T> &inputs) { return Predict(inputs); };
 };
 
@@ -59,6 +73,13 @@ public:
    std::vector<T> Predict(const std::vector<T> &inputs)
    {
       return std::vector<float>({static_cast<T>(fReader->EvaluateMVA(inputs, fTag))});
+   }
+   std::vector<std::vector<T>> Predict(const std::vector<std::vector<T>> &inputs)
+   {
+      std::vector<std::vector<T>> results(inputs.size());
+      for (unsigned int i = 0; i < inputs.size(); i++)
+         results[i] = Predict(inputs[i]);
+      return results;
    }
 
 private:
