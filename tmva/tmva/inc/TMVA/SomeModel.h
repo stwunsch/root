@@ -98,7 +98,8 @@ class Chain {
 public:
    Chain(Preprocessing::IMethod<T> &transform, Application::IMethod<T> &model)
       : fTransform(&transform), fModel(&model){};
-   std::vector<T> operator()(std::vector<T> &inputs) { return fModel->Predict(fTransform->Transform(inputs)); };
+   std::vector<T> operator()(std::vector<T> &inputs) { return Process(inputs); };
+   std::vector<T> Process(std::vector<T> &inputs) { return fModel->Predict(fTransform->Transform(inputs)); };
 
 private:
    Preprocessing::IMethod<T> *fTransform = 0;
