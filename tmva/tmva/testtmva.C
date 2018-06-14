@@ -8,7 +8,7 @@
 /*
  * To be solved:
  * - Batch processing -> RTensor?
- * - Processing of high-dimensional data?
+ * - Processing of high-dimensional data? -> RTensor?
  */
 
 template <typename T>
