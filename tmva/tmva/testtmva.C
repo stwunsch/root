@@ -1,5 +1,5 @@
 #include "ROOT/RDataFrame.hxx"
-#include "TMVA/Preprocessing.h"
+#include "TMVA/Transformation.h"
 #include "TMVA/Application.h"
 #include "TMVA/Utility.h"
 
@@ -33,7 +33,7 @@ void test()
    auto df2 = df1.Define("inputs", TMVA::Utility::MakeVector<4, float>::type(), variables);
 
    // ML based preprocessing
-   auto preprocessing = TMVA::Preprocessing::SomeMethod<float>("path_to_serialized_parameters");
+   auto preprocessing = TMVA::Transformation::SomeMethod<float>("path_to_serialized_parameters");
 
    // Set up model
    auto model = TMVA::Application::SomeMethod<float>(
