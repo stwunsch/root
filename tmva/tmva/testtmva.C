@@ -11,6 +11,7 @@
  * To be solved:
  * - Batch processing -> RTensor?
  * - Processing of high-dimensional data? -> RTensor?
+ * - Thread-safety of TMVA/other libraries? Copy constructors?
  */
 
 template <typename T>
