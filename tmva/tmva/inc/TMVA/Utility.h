@@ -2,7 +2,7 @@
 #define ROOT_TMVA_Utility
 
 #include <vector>
-#include "TMVA/Preprocessing.h"
+#include "TMVA/Transformation.h"
 #include "TMVA/Application.h"
 
 namespace TMVA {
@@ -33,14 +33,14 @@ struct MakeVector {
 template <typename T>
 class Chain {
 public:
-   Chain(Preprocessing::IMethod<T> &transform, Application::IMethod<T> &model)
+   Chain(Transformation::IMethod<T> &transform, Application::IMethod<T> &model)
       : fTransform(&transform), fModel(&model){};
    std::vector<T> operator()(std::vector<T> &inputs) { return Process(inputs); };
    std::vector<T> Process(std::vector<T> &inputs) { return fModel->Predict(fTransform->Transform(inputs)); };
 
 private:
-   Preprocessing::IMethod<T> *fTransform = 0;
-   // Preprocessing::IMethod<T> *fInverseTransform = 0; // TODO: To be included
+   Transformation::IMethod<T> *fTransform = 0;
+   // Transformation::IMethod<T> *fInverseTransform = 0; // TODO: To be included
    Application::IMethod<T> *fModel = 0;
 };
 
