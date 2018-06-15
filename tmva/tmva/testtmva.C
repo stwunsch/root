@@ -1,5 +1,7 @@
 #include "ROOT/RDataFrame.hxx"
-#include "TMVA/SomeModel.h"
+#include "TMVA/Preprocessing.h"
+#include "TMVA/Application.h"
+#include "TMVA/Utility.h"
 
 #include <iostream>
 #include <string>
