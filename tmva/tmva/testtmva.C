@@ -23,10 +23,7 @@ void test()
    // ROOT::EnableImplicitMT();
 
    // Load data
-   auto f = new TFile("/home/stefan/root-dev/tmva/tmva/dataset.root", "READ");
-   auto t = (TTree *)f->Get("TreeS");
-   auto df = ROOT::RDataFrame(*t);
-   std::cout << "Dataset size: " << t->GetEntries() << std::endl;
+   auto df = ROOT::RDataFrame("TreeS", "/home/stefan/root-dev/tmva/tmva/dataset.root");
 
    // Dataframe based preprocessing
    auto df1 = df.Define("new_var", "var1*var2");
