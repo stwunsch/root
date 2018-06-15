@@ -1,10 +1,10 @@
-#ifndef ROOT_TMVA_Preprocessing
-#define ROOT_TMVA_Preprocessing
+#ifndef ROOT_TMVA_Transformation
+#define ROOT_TMVA_Transformation
 
 #include <vector>
 
 namespace TMVA {
-namespace Preprocessing {
+namespace Transformation {
 
 /* Preprocessing method base class */
 template <typename T>
@@ -41,7 +41,7 @@ private:
    std::string fFile;
 };
 
-} // namespace Preprocessing
+} // namespace Transformation
 } // namespace TMVA
 
 #endif
