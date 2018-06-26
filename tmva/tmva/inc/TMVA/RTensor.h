@@ -54,9 +54,9 @@ template <typename T>
 T *RTensor<T>::Data() const
 {
    if (OwnsData()) {
-      return fData.data();
+      return const_cast<T *>(fData.data());
    } else {
-      return fExternalData;
+      return const_cast<T *>(fExternalData);
    }
 }
 
@@ -128,7 +128,7 @@ T RTensor<T>::At(I... idx) const
    for (size_t i = 0; i < fShape.size() - 1; i++)
       globalIndex += fShape[i + 1] * indices[i];
    globalIndex += indices[sizeof...(idx)-1];
-   return globalIndex;
+   return *(Data() + globalIndex);
 }
 
 // Access elements with call operator
