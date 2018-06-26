@@ -23,10 +23,10 @@ public:
    void Squeeze();
 
    template <typename... Args>
-   T At(Args... args) const;
+   T& At(Args... args) const;
 
    template <typename... Args>
-   T operator()(Args... args) const;
+   T& operator()(Args... args) const;
 
 private:
    size_t Size();
@@ -121,7 +121,7 @@ void RTensor<T>::Squeeze()
 // Access elements
 template <typename T>
 template <typename... I>
-T RTensor<T>::At(I... idx) const
+T& RTensor<T>::At(I... idx) const
 {
    std::vector<size_t> indices({static_cast<size_t>(idx)...});
    size_t globalIndex = 0;
@@ -134,7 +134,7 @@ T RTensor<T>::At(I... idx) const
 // Access elements with call operator
 template <typename T>
 template <typename... I>
-T RTensor<T>::operator()(I... idx) const
+T& RTensor<T>::operator()(I... idx) const
 {
    return this->At(idx...);
 }
