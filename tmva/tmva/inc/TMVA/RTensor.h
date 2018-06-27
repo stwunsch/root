@@ -22,11 +22,13 @@ public:
    void ExpandDims(int axis);
    void Squeeze();
 
-   template <typename... Args>
-   T& At(Args... args) const;
+   T &At(const std::vector<size_t> &idx) const;
 
    template <typename... Args>
-   T& operator()(Args... args) const;
+   T &At(Args... args) const;
+
+   template <typename... Args>
+   T &operator()(Args... args) const;
 
 private:
    size_t Size();
@@ -120,21 +122,27 @@ void RTensor<T>::Squeeze()
 
 // Access elements
 template <typename T>
-template <typename... I>
-T& RTensor<T>::At(I... idx) const
+T &RTensor<T>::At(const std::vector<size_t> &idx) const
 {
-   std::vector<size_t> indices({static_cast<size_t>(idx)...});
    size_t globalIndex = 0;
    for (size_t i = 0; i < fShape.size() - 1; i++)
-      globalIndex += fShape[i + 1] * indices[i];
-   globalIndex += indices[sizeof...(idx)-1];
+      globalIndex += fShape[i + 1] * idx[i];
+   globalIndex += idx[idx.size() - 1];
    return *(Data() + globalIndex);
+}
+
+template <typename T>
+template <typename... I>
+T &RTensor<T>::At(I... idx) const
+{
+   const std::vector<size_t> tmp({static_cast<size_t>(idx)...});
+   return this->At(tmp);
 }
 
 // Access elements with call operator
 template <typename T>
 template <typename... I>
-T& RTensor<T>::operator()(I... idx) const
+T &RTensor<T>::operator()(I... idx) const
 {
    return this->At(idx...);
 }
