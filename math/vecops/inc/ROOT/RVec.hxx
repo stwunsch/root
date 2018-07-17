@@ -680,11 +680,58 @@ RVec<typename RVec<T>::size_type> Argsort(const RVec<T> &v)
 
 /// Return elements of a vector at given indices
 template <typename T>
-RVec<T> ByIndices(const RVec<T> &v, const RVec<typename RVec<T>::size_type> &i)
+RVec<T> TakeIndices(const RVec<T> &v, const RVec<typename RVec<T>::size_type> &i)
 {
    RVec<T> r(i.size());
    for (unsigned int k = 0; k < i.size(); k++)
       r[k] = v[i[k]];
+   return r;
+}
+
+/// Return first elements of a vector
+template <typename T>
+RVec<T> TakeFirst(const RVec<T> &v, const typename RVec<T>::size_type n)
+{
+   RVec<T> r(n);
+   for (typename RVec<T>::size_type k = 0; k < n; k++)
+      r[k] = v[k];
+   return r;
+}
+
+/// Return last elements of a vector
+template <typename T>
+RVec<T> TakeLast(const RVec<T> &v, const typename RVec<T>::size_type n)
+{
+   RVec<T> r(n);
+   for (typename RVec<T>::size_type k = 0; k < n; k++)
+      r[k] = v[v.size() - n + k];
+   return r;
+}
+
+/// Return reversed vector
+template <typename T>
+RVec<T> Reverse(const RVec<T> &v)
+{
+   RVec<T> r(v);
+   std::reverse(r.begin(), r.end());
+   return r;
+}
+
+/// Return vector with sorted elements in ascending order
+template <typename T>
+RVec<T> Sort(const RVec<T> &v)
+{
+   RVec<T> r(v);
+   std::sort(r.begin(), r.end());
+   return r;
+}
+
+/// Return vector with sorted elements based on comparison operator
+template <typename T, typename Compare>
+RVec<T> Sort(const RVec<T> &v, Compare c)
+{
+   RVec<T> r(v);
+   std::sort(r.begin(), r.end(), c);
    return r;
 }
 

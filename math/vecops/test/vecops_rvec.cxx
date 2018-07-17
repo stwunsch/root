@@ -627,11 +627,63 @@ TEST(VecOps, Argsort)
    CheckEqual(i, ref);
 }
 
-TEST(VecOps, ByIndices)
+TEST(VecOps, TakeIndices)
 {
    ROOT::VecOps::RVec<int> v0{2, 0, 1};
    ROOT::VecOps::RVec<typename ROOT::VecOps::RVec<int>::size_type> i{1, 2, 0};
-   auto v1 = ByIndices(v0, i);
+   auto v1 = TakeIndices(v0, i);
    ROOT::VecOps::RVec<int> ref{0, 1, 2};
    CheckEqual(v1, ref);
+}
+
+TEST(VecOps, TakeFirst)
+{
+   ROOT::VecOps::RVec<int> v0{0, 1, 2};
+
+   auto v1 = TakeFirst(v0, 2);
+   ROOT::VecOps::RVec<int> ref{0, 1};
+   CheckEqual(v1, ref);
+
+   // Corner-case: Zero entries
+   auto v2 = TakeFirst(v0, 0);
+   ROOT::VecOps::RVec<int> none{};
+   CheckEqual(v2, none);
+}
+
+TEST(VecOps, TakeLast)
+{
+   ROOT::VecOps::RVec<int> v0{0, 1, 2};
+
+   auto v1 = TakeLast(v0, 2);
+   ROOT::VecOps::RVec<int> ref{1, 2};
+   CheckEqual(v1, ref);
+
+   // Corner-case: Zero entries
+   auto v2 = TakeLast(v0, 0);
+   ROOT::VecOps::RVec<int> none{};
+   CheckEqual(v2, none);
+}
+
+TEST(VecOps, Reverse)
+{
+   ROOT::VecOps::RVec<int> v0{0, 1, 2};
+
+   auto v1 = Reverse(v0);
+   ROOT::VecOps::RVec<int> ref{2, 1, 0};
+   CheckEqual(v1, ref);
+}
+
+TEST(VecOps, Sort)
+{
+   ROOT::VecOps::RVec<int> v{2, 0, 1};
+
+   // Sort in ascending order
+   auto v1 = Sort(v);
+   ROOT::VecOps::RVec<int> ref1{0, 1, 2};
+   CheckEqual(v1, ref1);
+
+   // Sort with comparison operator
+   auto v2 = Sort(v, std::greater<int>());
+   ROOT::VecOps::RVec<int> ref2{2, 1, 0};
+   CheckEqual(v2, ref2);
 }
