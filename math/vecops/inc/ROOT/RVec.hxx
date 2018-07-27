@@ -703,36 +703,41 @@ template <typename T>
 RVec<T> TakeLast(const RVec<T> &v, const typename RVec<T>::size_type n)
 {
    RVec<T> r(n);
+   const auto size = v.size();
    for (typename RVec<T>::size_type k = 0; k < n; k++)
-      r[k] = v[v.size() - n + k];
+      r[k] = v[size - n + k];
    return r;
 }
 
-/// Return reversed vector
+/// Reverse vector
 template <typename T>
-RVec<T> Reverse(const RVec<T> &v)
+RVec<T>& Reverse(RVec<T> &v)
 {
-   RVec<T> r(v);
-   std::reverse(r.begin(), r.end());
-   return r;
+   std::reverse(v.begin(), v.end());
+   return v;
 }
 
-/// Return vector with sorted elements in ascending order
 template <typename T>
-RVec<T> Sort(const RVec<T> &v)
+RVec<T>& Reverse(RVec<T> &&v)
 {
-   RVec<T> r(v);
-   std::sort(r.begin(), r.end());
-   return r;
+   std::reverse(v.begin(), v.end());
+   return v;
 }
 
-/// Return vector with sorted elements based on comparison operator
+/// Sort elements of vector in ascending order
+template <typename T>
+RVec<T>& Sort(RVec<T> &v)
+{
+   std::sort(v.begin(), v.end());
+   return v;
+}
+
+/// Sort elements of vector based on comparison operator
 template <typename T, typename Compare>
-RVec<T> Sort(const RVec<T> &v, Compare c)
+RVec<T>& Sort(RVec<T> &v, Compare c)
 {
-   RVec<T> r(v);
-   std::sort(r.begin(), r.end(), c);
-   return r;
+   std::sort(v.begin(), v.end(), c);
+   return v;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

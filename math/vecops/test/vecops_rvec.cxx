@@ -666,24 +666,23 @@ TEST(VecOps, TakeLast)
 
 TEST(VecOps, Reverse)
 {
-   ROOT::VecOps::RVec<int> v0{0, 1, 2};
-
-   auto v1 = Reverse(v0);
+   ROOT::VecOps::RVec<int> v{0, 1, 2};
+   Reverse(v);
    ROOT::VecOps::RVec<int> ref{2, 1, 0};
-   CheckEqual(v1, ref);
+   CheckEqual(v, ref);
 }
 
 TEST(VecOps, Sort)
 {
-   ROOT::VecOps::RVec<int> v{2, 0, 1};
-
    // Sort in ascending order
-   auto v1 = Sort(v);
+   ROOT::VecOps::RVec<int> v1{2, 0, 1};
+   Sort(v1);
    ROOT::VecOps::RVec<int> ref1{0, 1, 2};
    CheckEqual(v1, ref1);
 
    // Sort with comparison operator
-   auto v2 = Sort(v, std::greater<int>());
+   ROOT::VecOps::RVec<int> v2{2, 0, 1};
+   Sort(v2, std::greater<int>());
    ROOT::VecOps::RVec<int> ref2{2, 1, 0};
    CheckEqual(v2, ref2);
 }
