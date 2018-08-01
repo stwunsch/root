@@ -47,8 +47,6 @@ public:
    // Access elements
    T &At(const std::vector<size_t> &idx);
    template <typename... Idx>
-   T &At(Idx... idx);
-   template <typename... Idx>
    T &operator()(Idx... idx);
 
    // Shape modifications
@@ -105,14 +103,6 @@ T &RTensor<T>::At(const std::vector<size_t> &idx)
    for (size_t i = 0; i < size; i++)
       globalIndex += fCumulatedShape[size - 1 - i] * idx[size - 1 - i];
    return *(fData.data() + globalIndex);
-}
-
-/// Access elements with indices as arguments
-template <typename T>
-template <typename... Idx>
-T &RTensor<T>::At(Idx... idx)
-{
-   return this->At({static_cast<size_t>(idx)...});
 }
 
 /// Access elements with call operator

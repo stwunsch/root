@@ -14,4 +14,4 @@ ROOT_ADD_GTEST(TestRandomGenerator
 project(tmva-tests)
 find_package(ROOT REQUIRED)
 
-
+ROOT_ADD_GTEST(rtensor rtensor.cxx LIBRARIES ROOTVecOps TMVA)
