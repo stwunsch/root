@@ -34,3 +34,13 @@ TEST(RTensor, SetElement)
    for (size_t i = 0; i < shape.size(); i++)
       EXPECT_EQ((float)i, *(data + i));
 }
+
+TEST(RTensor, AdoptMemory)
+{
+   float data[4] = {0, 0, 0, 0};
+   RTensor<float> x(data, {4});
+   for (size_t i = 0; i < 4; i++)
+      x(i) = (float)i;
+   for (size_t i = 0; i < 4; i++)
+      EXPECT_EQ((float)i, data[i]);
+}
