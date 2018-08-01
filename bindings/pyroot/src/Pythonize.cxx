@@ -44,6 +44,7 @@
 #include "TInterpreterValue.h"
 
 #include "ROOT/RVec.hxx"
+#include "TMVA/RTensor.h"
 
 // Standard
 #include <stdexcept>
@@ -2336,6 +2337,48 @@ namespace {
       return dict;
    }
 
+   // Experimental: RTensor
+   template <typename dtype, char typestr>
+   PyObject *RTensorArrayInterface(ObjectProxy *self)
+   {
+      using TMVA::Experimental::RTensor;
+      RTensor<dtype> *cobj = (RTensor<dtype> *)(self->GetObject());
+      PyObject *dict = FillArrayInterfaceDict<dtype>(typestr);
+      PyObject* shape = PyTuple_New(cobj->GetShape().size());
+      for(unsigned int i=0; i<cobj->GetShape().size(); i++)
+         PyTuple_SetItem(shape, i, PyLong_FromLong(cobj->GetShape()[i]));
+      PyDict_SetItemString(dict, "shape", shape);
+      PyDict_SetItemString(dict, "data",
+                           PyTuple_Pack(2, PyLong_FromLong(reinterpret_cast<long>(cobj->GetData())), Py_False));
+      return dict;
+   }
+
+   template <typename dtype>
+   PyObject *RTensorSetItem(ObjectProxy *self, PyObject* obj)
+   {
+      using TMVA::Experimental::RTensor;
+      RTensor<dtype> *cobj = (RTensor<dtype> *)(self->GetObject());
+      std::vector<size_t> idx;
+      PyObject* shape = PyTuple_GetItem(obj, 0);
+      for(unsigned int i=0; i<PyTuple_Size(shape); i++)
+         idx.push_back(PyInt_AsLong(PyTuple_GetItem(shape, i)));
+      PyObject* value = PyTuple_GetItem(obj, 1);
+      cobj->At(idx) = PyFloat_AsDouble(value);
+      Py_INCREF( Py_None );
+      return Py_None;
+   }
+
+   template <typename dtype>
+   PyObject *RTensorGetItem(ObjectProxy *self, PyObject* obj)
+   {
+      using TMVA::Experimental::RTensor;
+      RTensor<dtype> *cobj = (RTensor<dtype> *)(self->GetObject());
+      std::vector<size_t> idx;
+      for(unsigned int i=0; i<PyTuple_Size(obj); i++)
+         idx.push_back(PyInt_AsLong(PyTuple_GetItem(obj, i)));
+      return PyFloat_FromDouble(cobj->At(idx));
+   }
+
    //- simplistic len() functions -------------------------------------------------
    PyObject* ReturnThree( ObjectProxy*, PyObject* ) {
       return PyInt_FromLong( 3 );
@@ -2760,6 +2803,14 @@ Bool_t PyROOT::Pythonize( PyObject* pyclass, const std::string& name )
          AddArrayInterface(pyclass, (PyCFunction)RVecArrayInterface<long, 'i'>);
       } else if (name.find("<unsigned long>") != std::string::npos) {
          AddArrayInterface(pyclass, (PyCFunction)RVecArrayInterface<unsigned long, 'u'>);
+      }
+   }
+
+   else if (name.find("RTensor<") != std::string::npos) {
+      if (name.find("<float>") != std::string::npos) {
+         AddArrayInterface(pyclass, (PyCFunction)RTensorArrayInterface<float, 'f'>);
+         Utility::AddToClass( pyclass, "__getitem__", (PyCFunction) RTensorGetItem<float>, METH_O );
+         Utility::AddToClass( pyclass, "__setitem__", (PyCFunction) RTensorSetItem<float>, METH_VARARGS );
       }
    }
 

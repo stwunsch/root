@@ -251,7 +251,8 @@ def _proxy__array_interface__(self):
 
 for pyclass in [
         "std::vector<{dtype}>",
-        "ROOT::VecOps::RVec<{dtype}>"
+        "ROOT::VecOps::RVec<{dtype}>",
+        "TMVA::Experimental::RTensor<{dtype}>"
         ]:
     dtypes = ["float", "double", "int", "unsigned int", "long", "unsigned long"]
     for dtype in dtypes:
