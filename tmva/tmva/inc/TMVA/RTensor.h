@@ -112,7 +112,7 @@ template <typename T>
 template <typename... Idx>
 T &RTensor<T>::At(Idx... idx)
 {
-   return this->At({idx...});
+   return this->At({static_cast<size_t>(idx)...});
 }
 
 /// Access elements with call operator
@@ -120,7 +120,7 @@ template <typename T>
 template <typename... Idx>
 T &RTensor<T>::operator()(Idx... idx)
 {
-   return this->At({idx...});
+   return this->At({static_cast<size_t>(idx)...});
 }
 
 /// Pretty printing
