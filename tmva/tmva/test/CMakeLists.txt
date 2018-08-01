@@ -15,3 +15,7 @@ project(tmva-tests)
 find_package(ROOT REQUIRED)
 
 ROOT_ADD_GTEST(rtensor rtensor.cxx LIBRARIES ROOTVecOps TMVA)
+
+if(NUMPY_FOUND)
+    ROOT_ADD_PYUNITTEST(pyroot_rtensor rtensor.py)
+endif()
