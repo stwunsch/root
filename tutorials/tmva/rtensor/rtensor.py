@@ -34,9 +34,12 @@ y = ROOT.AsTensor(y_np)
 print("RTensor with adopted memory from Numpy array:\n{}\n".format(y))
 
 # Show that shape matches
-print("Shapes of RTensor and Numpy array: {} == {}\n".format(
+print("Shapes of RTensor and Numpy array: {}, {}\n".format(
     y.GetShape(), y_np.shape))
 
 # Show that memory got adopted
 y_np[0, 0] = 42
-print("RTensor with first element set to 42:\n{}\n".format(y_np))
+print("RTensor with first element set to 42:\n{}\n".format(y))
+
+# Show change in numpy array
+print("Again Numpy array:\n{}\n".format(y_np))
