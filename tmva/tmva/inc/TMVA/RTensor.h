@@ -117,15 +117,36 @@ T &RTensor<T>::operator()(Idx... idx)
 template <typename T>
 std::ostream &operator<<(std::ostream &os, RTensor<T> &x)
 {
-   os << "{ ";
-   auto data = x.GetData();
-   const auto size = x.GetSize();
-   for (size_t i = 0; i < size; i++) {
-      os << *(data + i);
-      if (i != size - 1)
-         os << ", ";
+   const auto shapeSize = x.GetShape().size();
+   if (shapeSize == 1) {
+      os << "{ ";
+      auto data = x.GetData();
+      const auto size = x.GetSize();
+      for (size_t i = 0; i < size; i++) {
+         os << *(data + i);
+         if (i != size - 1)
+            os << ", ";
+      }
+      os << " }";
+   } else if (shapeSize == 2) {
+      os << "{";
+      const auto shape = x.GetShape();
+      for (size_t i = 0; i < shape[0]; i++) {
+         os << " { ";
+         for (size_t j = 0; j < shape[1]; j++) {
+            os << x(i, j);
+            if (j < shape[1] - 1) {
+               os << ", ";
+            } else {
+               os << " ";
+            }
+         }
+         os << "}";
+      }
+      os << " }";
+   } else {
+      os << "{ printing not yet implemented for this dimension }";
    }
-   os << " }";
    return os;
 }
 

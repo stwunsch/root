@@ -9,7 +9,7 @@ for i in range(data.size()):
 shape = ROOT.std.vector("size_t")(2)
 shape[0], shape[1] = 3, 2
 x = RTensor("float")(data.data(), shape)
-print("Initial flat RTensor:\n{}\n".format(x))
+print("Initial RTensor:\n{}\n".format(x))
 
 # Show getitem and setitem
 print("Get entry at [0,0]: {}\n".format(x[0, 0]))
@@ -24,14 +24,14 @@ x_np[0, 0] = 999
 print("Numpy array with element [0,0] set to 999:\n{}\n".format(x_np))
 
 # Show change in tensor
-print("Again flat RTensor:\n{}\n".format(x))
+print("Again RTensor:\n{}\n".format(x))
 
 # Adopt memory of numpy array
 y_np = np.array([[0, 1, 2], [3, 4, 5]], dtype="float32")
 print("Initial Numpy array:\n{}\n".format(y_np))
 
 y = ROOT.AsTensor(y_np)
-print("Flat RTensor with adopted memory from Numpy array:\n{}\n".format(y))
+print("RTensor with adopted memory from Numpy array:\n{}\n".format(y))
 
 # Show that shape matches
 print("Shapes of RTensor and Numpy array: {} == {}\n".format(
@@ -39,4 +39,4 @@ print("Shapes of RTensor and Numpy array: {} == {}\n".format(
 
 # Show that memory got adopted
 y_np[0, 0] = 42
-print("RTensor with first element set to 42:\n{}\n".format(x_np))
+print("RTensor with first element set to 42:\n{}\n".format(y_np))
