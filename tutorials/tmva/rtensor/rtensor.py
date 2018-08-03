@@ -25,3 +25,18 @@ print("Numpy array with element [0,0] set to 999:\n{}\n".format(x_np))
 
 # Show change in tensor
 print("Again flat RTensor:\n{}\n".format(x))
+
+# Adopt memory of numpy array
+y_np = np.array([[0, 1, 2], [3, 4, 5]], dtype="float32")
+print("Initial Numpy array:\n{}\n".format(y_np))
+
+y = ROOT.AsTensor(y_np)
+print("Flat RTensor with adopted memory from Numpy array:\n{}\n".format(y))
+
+# Show that shape matches
+print("Shapes of RTensor and Numpy array: {} == {}\n".format(
+    y.GetShape(), y_np.shape))
+
+# Show that memory got adopted
+y_np[0, 0] = 42
+print("RTensor with first element set to 42:\n{}\n".format(x_np))

@@ -226,6 +226,39 @@ sys.modules['ROOT.std'] = cppyy.gbl.std
 
 ### special case pythonization --------------------------------------------------
 
+# AsTensor functionality
+
+def _AsTensor(x):
+    # TODO: Check type of x
+
+    # Get data-type
+    dtype = str(x.dtype)
+    if dtype == "float32":
+        pass
+    else:
+        raise Exception("Numpy array with data-type {} cannot be converted to RTensor.".format(dtype))
+
+    dtype_map = {
+        "float32": "float"
+    }
+
+    # Get pointer to data
+    # TODO: Check for C and F ordering
+    # TODO: Sanitize that the array interface is there
+    ptr = _root.PyROOT.GetAddressFromLong("float")(x.__array_interface__["data"][0])
+
+    # Get shape
+    shape = _root.std.vector("size_t")()
+    for s in x.shape:
+        shape.push_back(s)
+
+    # Create RTensor adopting memory of numpy array
+    t = _root.TMVA.Experimental.RTensor(dtype_map[dtype])(ptr, shape)
+
+    return t
+
+_root.AsTensor = _AsTensor
+
 # TTree iterator
 def _TTree__iter__( self ):
    i = 0
