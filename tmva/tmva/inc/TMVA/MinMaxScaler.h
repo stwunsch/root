@@ -91,7 +91,7 @@ std::vector<T> MinMaxScaler<T>::Transform(std::vector<T> &inputs)
    const auto size = inputs.size();
    std::vector<T> outputs(size);
    for (size_t i = 0; i < size; i++)
-      outputs[i] = (inputs[i] - fInputMin[i]) / (fInputMax[i] - fInputMin[i]) * (fOutputMax - fOutputMin) - fOutputMin;
+      outputs[i] = (inputs[i] - fInputMin[i]) / (fInputMax[i] - fInputMin[i]) * (fOutputMax - fOutputMin) + fOutputMin;
    return outputs;
 }
 
@@ -103,7 +103,7 @@ TMVA::Experimental::RTensor<T> MinMaxScaler<T>::Transform(TMVA::Experimental::RT
    for (size_t i = 0; i < shape[0]; i++) {
       for (size_t j = 0; j < shape[1]; j++) {
          outputs(i, j) =
-            (inputs(i, j) - fInputMin[j]) / (fInputMax[j] - fInputMin[j]) * (fOutputMax - fOutputMin) - fOutputMin;
+            (inputs(i, j) - fInputMin[j]) / (fInputMax[j] - fInputMin[j]) * (fOutputMax - fOutputMin) + fOutputMin;
       }
    }
    return outputs;
