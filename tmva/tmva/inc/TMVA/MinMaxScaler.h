@@ -1,6 +1,7 @@
 #ifndef ROOT_TMVA_MINMAXSCALER
 #define ROOT_TMVA_MINMAXSCALER
 
+#include "TNamed.h"
 #include "TMVA/RTensor.h"
 #include <string>
 #include <vector>
@@ -11,7 +12,7 @@ namespace Experimental {
 namespace Training {
 
 template <typename T>
-class MinMaxScaler {
+class MinMaxScaler : public TNamed {
 public:
    MinMaxScaler();
    MinMaxScaler(T min, T max);
@@ -27,6 +28,9 @@ private:
    T fOutputMax;
    std::vector<T> fInputMin;
    std::vector<T> fInputMax;
+
+public:
+   ClassDef(MinMaxScaler, 1);
 };
 
 template <typename T>

@@ -1,8 +1,10 @@
 #ifndef ROOT_TMVA_FISHER
 #define ROOT_TMVA_FISHER
 
+#include "TNamed.h"
 #include "TMVA/RTensor.h"
 #include "TMatrix.h"
+#include "TFile.h"
 #include <iostream>
 
 namespace TMVA {
@@ -130,7 +132,7 @@ std::vector<T> Matmul(TMVA::Experimental::RTensor<T> &x, std::vector<T> &y)
 namespace Training {
 
 template <typename T>
-class Fisher {
+class Fisher : public TNamed {
 public:
    Fisher();
    void Fit(TMVA::Experimental::RTensor<T> &inputs, TMVA::Experimental::RTensor<T> &labels);
@@ -139,6 +141,9 @@ public:
 
 private:
    std::vector<T> fFisherCoeff;
+
+public:
+   ClassDef(Fisher, 1);
 };
 
 template <typename T>
@@ -167,10 +172,20 @@ template <typename T>
 class Fisher {
 public:
    Fisher(TMVA::Experimental::Training::Fisher<T> &model);
+   Fisher(const std::string &filename, const std::string &methodName);
    TMVA::Experimental::RTensor<T> Predict(TMVA::Experimental::RTensor<T> &x);
 
 private:
    std::vector<T> fFisherCoeff;
+};
+
+template <typename T>
+Fisher<T>::Fisher(const std::string &filename, const std::string &methodName)
+{
+   auto file = TFile::Open(filename.c_str());
+   auto model = (TMVA::Experimental::Training::Fisher<T> *)file->Get(methodName.c_str());
+   fFisherCoeff = model->GetFisherCoeff();
+   file->Close();
 };
 
 template <typename T>
