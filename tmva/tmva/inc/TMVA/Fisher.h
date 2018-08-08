@@ -201,9 +201,9 @@ template <typename T>
 std::vector<T> Fisher<T>::Predict(std::vector<T> &x)
 {
    const auto size = x.size();
-   std::vector<T> y(size);
+   std::vector<T> y(1);
    for (size_t i = 0; i < size; i++) {
-      y[i] += x[i] * fFisherCoeff[i];
+      y[0] += x[i] * fFisherCoeff[i];
    }
    return y;
 }

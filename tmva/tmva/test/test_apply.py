@@ -11,11 +11,23 @@ def make_plot(scores, x_sig_numpy):
     scores_bkg_numpy = scores_numpy[x_sig_numpy.shape[0]:]
     plt.figure(figsize=(5, 5))
     plt.hist(
-        scores_bkg_numpy, bins=30, histtype="step", lw=3, label="Background")
-    plt.hist(scores_sig_numpy, bins=30, histtype="step", lw=3, label="Signal")
+        scores_bkg_numpy,
+        bins=30,
+        range=(-10, 10),
+        histtype="step",
+        lw=3,
+        label="Background")
+    plt.hist(
+        scores_sig_numpy,
+        bins=30,
+        range=(-10, 10),
+        histtype="step",
+        lw=3,
+        label="Signal")
     plt.xlabel("Fisher score")
     plt.ylabel("Count")
     plt.legend()
+    plt.xlim((-10, 10))
     plt.savefig("fisher.png", bbox_inches="tight")
 
 
@@ -33,7 +45,7 @@ if __name__ == "__main__":
     file_.Close()
 
     # Apply MVA method
-    fisher = Inference.Fisher("float")("test.root", "Fisher")
+    fisher = Inference.Fisher("float")("fisher.root", "Fisher")
     scores = fisher.Predict(x)
 
     # Plot scores

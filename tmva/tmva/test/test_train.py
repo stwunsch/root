@@ -30,6 +30,6 @@ if __name__ == "__main__":
 
     # Serialize method to file
     fisher.SetName("Fisher")
-    f = ROOT.TFile("test.root", "RECREATE")
+    f = ROOT.TFile("fisher.root", "RECREATE")
     fisher.Write()
     f.Close()

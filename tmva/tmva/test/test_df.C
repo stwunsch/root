@@ -2,24 +2,21 @@ void test_df()
 {
    // Create Fisher method for inference
    using TMVA::Experimental::Inference::Fisher;
-   Fisher<float> fisher("test.root", "Fisher");
+   Fisher<float> fisher("fisher.root", "Fisher");
 
    // Load data in dataframe
    auto df_sig = ROOT::RDataFrame("TreeS", "tmva_class_example.root");
    auto df_bkg = ROOT::RDataFrame("TreeB", "tmva_class_example.root");
 
    // Book nodes running the application
-   std::vector<std::string> variables = {"var1", "var2", "var3", "var4"};
+   std::vector<std::string> variables = {"var1", "var1", "var1", "var1"};
 
-   auto df_sig2 = df_sig.Define("fisher_response", ROOT::RDF::PassAsVec<4, float>(fisher), variables);
-   auto df_sig3 = df_sig2.Define("fisher_sig_score", "fisher_response[0]");
-
-   auto df_bkg2 = df_bkg.Define("fisher_response", ROOT::RDF::PassAsVec<4, float>(fisher), variables);
-   auto df_bkg3 = df_bkg2.Define("fisher_sig_score", "fisher_response[0]");
+   auto df_sig2 = df_sig.Define("fisher_score", ROOT::RDF::PassAsVec<4, float>(fisher), variables);
+   auto df_bkg2 = df_bkg.Define("fisher_score", ROOT::RDF::PassAsVec<4, float>(fisher), variables);
 
    // Book histograms
-   auto h_sig = df_sig3.Histo1D({"h_sig", "h_sig", 30, -3, 3}, "fisher_sig_score");
-   auto h_bkg = df_bkg3.Histo1D({"h_bkg", "h_bkg", 30, -3, 3}, "fisher_sig_score");
+   auto h_sig = df_sig2.Histo1D({"h_sig", "h_sig", 30, -10, 10}, "fisher_score");
+   auto h_bkg = df_bkg2.Histo1D({"h_bkg", "h_bkg", 30, -10, 10}, "fisher_score");
 
    // Plot
    h_sig->SetLineColor(kRed);
