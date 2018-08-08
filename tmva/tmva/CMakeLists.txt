@@ -17,7 +17,7 @@ set(headers1 Configurable.h Factory.h  MethodBase.h MethodCompositeBase.h
 	     MethodHMatrix.h MethodPDERS.h MethodBDT.h MethodDT.h MethodSVM.h MethodBayesClassifier.h
 	     MethodFDA.h MethodMLP.h MethodBoost.h
 	     MethodPDEFoam.h MethodLD.h MethodCategory.h MethodDNN.h MethodDL.h
-         MethodCrossValidation.h RTensor.h MinMaxScaler.h Fisher.h)
+         MethodCrossValidation.h RTensor.h MinMaxScaler.h Fisher.h Utility.h)
 set(headers2 TSpline2.h TSpline1.h PDF.h BinaryTree.h BinarySearchTreeNode.h BinarySearchTree.h 
 	     Timer.h RootFinder.h CrossEntropy.h DecisionTree.h DecisionTreeNode.h MisClassificationError.h 
 	     Node.h SdivSqrtSplusB.h SeparationBase.h RegressionVariance.h Tools.h Reader.h 
@@ -117,13 +117,13 @@ if(NOT gnuinstall)
 endif()
 
 
-ROOT_ADD_TEST_SUBDIRECTORY(test)
+#ROOT_ADD_TEST_SUBDIRECTORY(test)
 # Subdirectories
-ROOT_ADD_TEST_SUBDIRECTORY(test/crossvalidation)
-ROOT_ADD_TEST_SUBDIRECTORY(test/DNN)
-ROOT_ADD_TEST_SUBDIRECTORY(test/Method)
-ROOT_ADD_TEST_SUBDIRECTORY(test/ROC)
-ROOT_ADD_TEST_SUBDIRECTORY(test/envelope)
-ROOT_ADD_TEST_SUBDIRECTORY(test/DNN/CNN)
-ROOT_ADD_TEST_SUBDIRECTORY(test/DNN/RNN)
+#ROOT_ADD_TEST_SUBDIRECTORY(test/crossvalidation)
+#ROOT_ADD_TEST_SUBDIRECTORY(test/DNN)
+#ROOT_ADD_TEST_SUBDIRECTORY(test/Method)
+#ROOT_ADD_TEST_SUBDIRECTORY(test/ROC)
+#ROOT_ADD_TEST_SUBDIRECTORY(test/envelope)
+#ROOT_ADD_TEST_SUBDIRECTORY(test/DNN/CNN)
+#ROOT_ADD_TEST_SUBDIRECTORY(test/DNN/RNN)
 #ROOT_ADD_TEST_SUBDIRECTORY(test/DNN/DAE)

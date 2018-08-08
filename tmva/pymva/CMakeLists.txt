@@ -22,4 +22,4 @@ ROOT_STANDARD_LIBRARY_PACKAGE(PyMVA
                               LIBRARIES ${PYTHON_LIBRARIES}
                               DEPENDENCIES Core Matrix Thread RIO TMVA)
 
-ROOT_ADD_TEST_SUBDIRECTORY(test)
+                          #ROOT_ADD_TEST_SUBDIRECTORY(test)
