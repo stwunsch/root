@@ -173,7 +173,10 @@ class Fisher {
 public:
    Fisher(TMVA::Experimental::Training::Fisher<T> &model);
    Fisher(const std::string &filename, const std::string &methodName);
+
    TMVA::Experimental::RTensor<T> Predict(TMVA::Experimental::RTensor<T> &x);
+   std::vector<T> Predict(std::vector<T> &x);
+   std::vector<T> operator()(std::vector<T> x) { return Predict(x); }
 
 private:
    std::vector<T> fFisherCoeff;
@@ -193,6 +196,17 @@ Fisher<T>::Fisher(TMVA::Experimental::Training::Fisher<T> &model)
 {
    fFisherCoeff = model.GetFisherCoeff();
 };
+
+template <typename T>
+std::vector<T> Fisher<T>::Predict(std::vector<T> &x)
+{
+   const auto size = x.size();
+   std::vector<T> y(size);
+   for (size_t i = 0; i < size; i++) {
+      y[i] += x[i] * fFisherCoeff[i];
+   }
+   return y;
+}
 
 template <typename T>
 TMVA::Experimental::RTensor<T> Fisher<T>::Predict(TMVA::Experimental::RTensor<T> &x)

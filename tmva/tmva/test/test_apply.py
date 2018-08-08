@@ -32,8 +32,8 @@ if __name__ == "__main__":
     file_.Close()
 
     # Apply MVA method
-    fisher_apply = Inference.Fisher("float")("test.root", "Fisher")
-    scores = fisher_apply.Predict(x)
+    fisher = Inference.Fisher("float")("test.root", "Fisher")
+    scores = fisher.Predict(x)
 
     # Plot scores
     scores_numpy = np.asarray(scores)
