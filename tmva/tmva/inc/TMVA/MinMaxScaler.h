@@ -3,6 +3,7 @@
 
 #include "TNamed.h"
 #include "TMVA/RTensor.h"
+#include "TFile.h"
 #include <string>
 #include <vector>
 
@@ -112,6 +113,55 @@ TMVA::Experimental::RTensor<T> MinMaxScaler<T>::Transform(TMVA::Experimental::RT
    }
    return outputs;
 }
+
+namespace Sklearn {
+
+template <typename T>
+class MinMaxScaler : public TNamed {
+public:
+   MinMaxScaler(){};
+   MinMaxScaler(const std::string &filename, const std::string &name);
+
+   void SetMin(std::vector<T> &min) { fMin = min; };
+   void SetScale(std::vector<T> &scale) { fScale = scale; };
+   std::vector<T> GetMin() { return fMin; };
+   std::vector<T> GetScale() { return fScale; };
+
+   TMVA::Experimental::RTensor<T> Transform(TMVA::Experimental::RTensor<T> &x);
+
+private:
+   std::vector<T> fMin;
+   std::vector<T> fScale;
+
+public:
+   ClassDef(MinMaxScaler, 1);
+};
+
+template <typename T>
+MinMaxScaler<T>::MinMaxScaler(const std::string &filename, const std::string &name)
+{
+   auto file = new TFile(filename.c_str());
+   auto model = (MinMaxScaler *)file->Get(name.c_str());
+   fMin = model->GetMin();
+   fScale = model->GetScale();
+   file->Close();
+   delete file;
+}
+
+template <typename T>
+TMVA::Experimental::RTensor<T> MinMaxScaler<T>::Transform(TMVA::Experimental::RTensor<T> &x)
+{
+   const auto shape = x.GetShape();
+   TMVA::Experimental::RTensor<T> y(shape);
+   for (size_t i = 0; i < shape[0]; i++) {
+      for (size_t j = 0; j < shape[1]; j++) {
+         y(i, j) = x(i, j) * fScale[j] + fMin[j];
+      }
+   }
+   return y;
+}
+
+} // namespace Sklearn
 
 } // namespace Inference
 

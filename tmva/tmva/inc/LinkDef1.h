@@ -25,6 +25,7 @@
 #pragma link C++ class TMVA::Experimental::ClassificationResult + ;
 
 #pragma link C++ class TMVA::Experimental::Training::MinMaxScaler<float> + ;
+#pragma link C++ class TMVA::Experimental::Inference::Sklearn::MinMaxScaler<float> + ;
 #pragma link C++ class TMVA::Experimental::Training::Fisher<float> + ;
 
 //required to enable serialization on DataLoader for paralellism.
