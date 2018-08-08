@@ -10,8 +10,9 @@ def make_plot(scores, x_sig_numpy):
     scores_sig_numpy = scores_numpy[:x_sig_numpy.shape[0]]
     scores_bkg_numpy = scores_numpy[x_sig_numpy.shape[0]:]
     plt.figure(figsize=(5, 5))
-    plt.hist(scores_bkg_numpy, histtype="step", lw=3, label="Background")
-    plt.hist(scores_sig_numpy, histtype="step", lw=3, label="Signal")
+    plt.hist(
+        scores_bkg_numpy, bins=30, histtype="step", lw=3, label="Background")
+    plt.hist(scores_sig_numpy, bins=30, histtype="step", lw=3, label="Signal")
     plt.xlabel("Fisher score")
     plt.ylabel("Count")
     plt.legend()
