@@ -1,6 +1,6 @@
 using namespace ROOT::VecOps;
 
-void test(){
+void vo005_Combinations(){
     RVec<float> x = {1, 2, 3, 4};
     cout << "Initial vector:\n  " << x << endl << endl;
 
