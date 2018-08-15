@@ -749,6 +749,41 @@ RVec<T> Sorted(const RVec<T> &v, Compare &&c)
    return r;
 }
 
+/// Returns an RVec that build a combination with other RVecs
+template <typename T>
+RVec<T> Combinations(RVec<T>& v, typename RVec<T>::size_type r, typename RVec<T>::size_type idx)
+{
+   using size_type = typename RVec<T>::size_type;
+   const size_type n = v.size();
+   if (idx > r) {
+      std::stringstream ss;
+      ss << "Cannot make combinations of size " << r << " from vector of size " << n << ".";
+      throw std::runtime_error(ss.str());
+   }
+   RVec<size_type> indices(n);
+   for(size_type i=0; i<n; i++)
+      indices[i] = i;
+   RVec<T> c;
+   c.push_back(std::move(v[indices[idx]]));
+   while (true) {
+      bool run_through = true;
+      long i = r - 1;
+      for (; i>=0; i--) {
+         if (indices[i] != i + n - r){
+            run_through = false;
+            break;
+         }
+      }
+      if (run_through) {
+         return c;
+      }
+      indices[i]++;
+      for (size_type j=i+1; i<r; i++)
+         indices[j] = indices[j-1] + 1;
+      c.push_back(std::move(v[indices[idx]]));
+   }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Print a RVec at the prompt:
 template <class T>
