@@ -6,7 +6,7 @@ set(PYROOT_HEADERS inc/TPyFitFunction.h    inc/TPython.h
                    inc/TPyArg.h            inc/TPyROOTApplication.h
                    inc/TTreeAsFlatMatrix.h inc/TPyDispatcher.h
                    inc/TPyReturn.h         inc/TPyException.h
-                   inc/TPySelector.h)
+                   inc/TPySelector.h       inc/RDataFramePyFilter.h)
 
 set(PYROOT_PKG_DEPENDENCIES Core MathCore Net Rint Tree ROOTVecOps ROOTDataFrame)
 
@@ -15,11 +15,13 @@ if( CMAKE_SIZEOF_VOID_P EQUAL 4 ) # With this we exclude ROOTDataFrame on 32 bit
   list(REMOVE_ITEM PYROOT_PKG_DEPENDENCIES ROOTDataFrame)
 endif()
 
+include_directories(${PYTHON_INCLUDE_DIRS})
+
 ROOT_STANDARD_LIBRARY_PACKAGE(PyROOT
                               NO_INSTALL_HEADERS
                               HEADERS ${PYROOT_HEADERS}
                               DICTIONARY_OPTIONS "-writeEmptyRootPCM"
-                              LIBRARIES Core MathCore Net Rint Tree
+                              LIBRARIES Core MathCore Net Rint Tree ROOTDataFrame
                               DEPENDENCIES ${PYROOT_PKG_DEPENDENCIES})
 ROOT_LINKER_LIBRARY(JupyROOT ../JupyROOT/src/*.cxx DEPENDENCIES Core CMAKENOEXPORT)
 

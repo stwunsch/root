@@ -226,6 +226,42 @@ sys.modules['ROOT.std'] = cppyy.gbl.std
 
 ### special case pythonization --------------------------------------------------
 
+# RDataFrame.PyFilter
+def PyFilter(self, pycallable, columns, name):
+    # Raise exception if implicit multi-threading is enabeled
+    # TODO
+
+    # Perform type inference of given columns
+    types_str = _root.std.vector("string")()
+    for c in columns:
+        types_str.push_back(self.GetColumnType(c))
+
+    # Build string representing types for Python/C API call
+    basic_types_map = {
+            "float": "f", "Float_t": "f",
+            # TODO: Fill this map
+            }
+    pytype = ""
+    for t in types_str:
+        # Find basic types
+        if t in basic_types_map:
+            pytype += basic_types_map[t]
+        # Otherwise, register as an object
+        else:
+            pytype += "O"
+
+    # Convert columns to vector<string>
+    columns_str = _root.std.vector("string")()
+    for c in columns:
+        columns_str.push_back(c)
+
+    # Go to C++ and create filter which calls Python callable via Python/C API
+    node = _root.PyROOT.RDataFramePyFilter(_root.PyROOT.PassAsRNode(self), pycallable, columns_str, types_str, pytype , name)
+
+    return node
+
+_root.PyFilter = PyFilter
+
 # TTree iterator
 def _TTree__iter__( self ):
    i = 0
