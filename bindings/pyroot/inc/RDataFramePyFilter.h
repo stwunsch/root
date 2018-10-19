@@ -27,23 +27,8 @@ ROOT::RDF::RNode PassAsRNode(T df)
    return df;
 }
 
-ROOT::RDF::RNode RDataFramePyFilter(ROOT::RDF::RNode df, PyObject *f, std::vector<std::string> &columns, std::vector<std::string>& types,
-                                    std::string pytype, std::string name)
-{
-   // TODO: Sanitize number of arguments for callable (segfault otherwise)
-
-   // TODO: How to sanitize the call? How to forward the Python interpreter error?
-
-   // JIT lambda with correct signature
-   auto l = [f, pytype](float x) {
-      PyObject *pyret = PyObject_CallFunction(f, (char *)pytype.c_str(), x);
-      bool ret = PyObject_IsTrue(pyret);
-      Py_XDECREF(pyret);
-      return ret;
-   };
-
-   return df.Filter(l, columns, name);
-}
+ROOT::RDF::RNode RDataFramePyFilter(ROOT::RDF::RNode df, PyObject *f, std::vector<std::string> &columns,
+                                    std::vector<std::string> &types, std::string pytype, std::string name);
 }
 
 #endif

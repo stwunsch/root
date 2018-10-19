@@ -3,16 +3,18 @@ import numpy as np
 
 # Create file
 dfx = ROOT.ROOT.RDataFrame(10)
-dfx1 = dfx.Define("b1", "(float) tdfentry_").Snapshot("tree", "test.root")
+dfx1 = dfx.Define("b1", "std::vector<float>(tdfentry_+1)").Snapshot("tree", "test.root")
 
 # Test
 df1 = ROOT.ROOT.RDataFrame("tree", "test.root")
 
 def f(x):
-    return True if np.sqrt(x) > np.pi/2 and x < 2*np.pi else False
+    print(np.asarray(x))
+    return True if len(x)>5 else False
 
 df2 = ROOT.PyFilter(df1, f, ["b1"], "Filter with Python callable")
 df2.Snapshot("tree", "test2.root")
+raise Exception("STOP")
 
 # Check
 f = ROOT.TFile("test.root")

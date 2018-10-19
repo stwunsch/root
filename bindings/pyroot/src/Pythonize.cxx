@@ -54,6 +54,30 @@
 #include <stdio.h>
 #include <string.h>     // only needed for Cling TMinuit workaround
 
+#include "RDataFramePyFilter.h"
+#include "ROOT/RDataFrame.hxx"
+#include "ROOT/RDF/RInterface.hxx"
+
+ROOT::RDF::RNode PyROOT::RDataFramePyFilter(ROOT::RDF::RNode df, PyObject *f, std::vector<std::string> &columns, std::vector<std::string>& types,
+                                    std::string pytype, std::string name)
+{
+   // TODO: Sanitize number of arguments for callable (segfault otherwise)
+
+   // TODO: How to sanitize the call? How to forward the Python interpreter error?
+
+   // JIT lambda with correct signature
+   auto l = [f](std::vector<float>& x) {
+      PyObject *pyx = (PyObject*)PyROOT::BindCppObject(&x, Cppyy::GetScope("std::vector<float>"));
+      PyObject *pyret = PyObject_CallFunction((PyObject*)f, (char*)"O", pyx);
+      bool ret = PyObject_IsTrue(pyret);
+      Py_XDECREF(pyret);
+      Py_XDECREF(pyx);
+      return ret;
+   };
+
+   return df.Filter(l, columns, name);
+}
+
 
 // temp (?)
 static inline TClass* OP2TCLASS( PyROOT::ObjectProxy* pyobj ) {
