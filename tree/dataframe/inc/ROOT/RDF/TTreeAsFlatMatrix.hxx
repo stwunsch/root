@@ -12,6 +12,7 @@
 #define ROOT_TTreeAsFlatMatrix
 
 #include "ROOT/RDataFrame.hxx"
+#include "ROOT/RDF/RInterface.hxx"
 
 #include <vector>
 #include <string>
@@ -20,6 +21,17 @@
 namespace ROOT {
 namespace Detail {
 namespace RDF {
+
+template <typename T>
+ROOT::RDF::RNode ToRNode(T df) {
+   return df;
+}
+
+template <typename ColType>
+ROOT::RDF::RResultPtr<std::vector<ColType>> TakeHelper(
+        ROOT::RDF::RNode df, const std::string& column) {
+   return df.Take<ColType>(column);
+}
 
 template <typename dtype>
 ULong64_t GetVectorAddress(std::vector<dtype> &p)
