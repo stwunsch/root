@@ -51,6 +51,10 @@ import pandas
 pdf = pandas.DataFrame(data)
 print(pdf)
 
+# seaborn.lmplot
+import seaborn as sns
+sns.lmplot("x", "y", data=pdf)
+
 # matplotlib.pyplot
 import matplotlib.pyplot as plt
 plt.figure()
