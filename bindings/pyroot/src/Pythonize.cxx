@@ -44,6 +44,8 @@
 #include "TInterpreterValue.h"
 
 #include "ROOT/RVec.hxx"
+#include "ROOT/RDF/RInterface.hxx"
+//#include "RDataFrameAsNumpy.h"
 
 // Standard
 #include <stdexcept>
@@ -54,6 +56,9 @@
 #include <stdio.h>
 #include <string.h>     // only needed for Cling TMinuit workaround
 
+namespace PyROOT {
+
+}
 
 // temp (?)
 static inline TClass* OP2TCLASS( PyROOT::ObjectProxy* pyobj ) {

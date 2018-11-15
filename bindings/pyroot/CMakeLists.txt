@@ -13,6 +13,7 @@ ROOT_STANDARD_LIBRARY_PACKAGE(PyROOT
     TPyROOTApplication.h
     TPySelector.h
     TPython.h
+    RDataFrameAsNumpy.h
   SOURCES
     src/Converters.cxx
     src/Cppyy.cxx
@@ -54,6 +55,7 @@ ROOT_STANDARD_LIBRARY_PACKAGE(PyROOT
     MathCore
     ROOTVecOps
     Tree
+    ROOTDataFrame
 )
 
 ROOT_ADD_CXX_FLAG(_PyROOT_FLAGS -fno-strict-aliasing)
