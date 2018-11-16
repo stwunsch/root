@@ -11,13 +11,9 @@ columns = ROOT.std.vector("string")()
 columns.push_back("x")
 columns.push_back("y")
 
-# Register helper
+# Register helper and call
 helper = ROOT.PyROOT.AsNumpyHelper("float", "int")()
-booking_helper = ROOT.PyROOT.BookingHelper("float", "int")()
-df_npy = booking_helper.Book(df_rnode, helper, columns)
-
-# Get structured numpy array / record array
-pytuple = df_npy.GetValue()
-print(repr(pytuple))
-dtype = [("x", "f4"), ("y", "i4")]
-# npy_array = np.array(pytuple, dtype)
+call_helper = ROOT.PyROOT.CallHelper("float", "int")()
+pyobj = call_helper.Call(df_rnode, helper, columns)
+print(pyobj)
+print(type(pyobj))

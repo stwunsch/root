@@ -459,13 +459,11 @@ endif()
 if(python)
   find_package(PythonInterp ${python_version} REQUIRED)
   find_package(PythonLibs ${python_version} REQUIRED)
-  if (tmva)
     if(fail-on-missing)
       find_package(NumPy REQUIRED)
     else()
       find_package(NumPy)
     endif()
-  endif()
 endif()
 
 #---Check for Ruby installation-------------------------------------------------------

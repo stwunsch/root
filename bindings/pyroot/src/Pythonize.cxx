@@ -45,7 +45,7 @@
 
 #include "ROOT/RVec.hxx"
 #include "ROOT/RDF/RInterface.hxx"
-//#include "RDataFrameAsNumpy.h"
+#include "RDataFrameAsNumpy.h"
 
 // Standard
 #include <stdexcept>
@@ -56,7 +56,42 @@
 #include <stdio.h>
 #include <string.h>     // only needed for Cling TMinuit workaround
 
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <numpy/arrayobject.h>
+
+
 namespace PyROOT {
+
+int PyROOT_PyTuple_SetItem(PyObject* po, unsigned int pos, PyObject* item)
+{
+    return PyTuple_SetItem(po, pos, item);
+}
+
+PyObject* PyROOT_PyTuple_New(unsigned int n)
+{
+   return PyTuple_New(n);
+}
+
+PyObject* PyROOT_PyTuple_GetElement(float x)
+{
+   return PyFloat_FromDouble(x);
+}
+
+PyObject* PyROOT_PyTuple_GetElement(int x)
+{
+   return PyInt_FromLong(x);
+}
+
+void PyROOT_import_array()
+{
+   _import_array();
+}
+
+PyObject* PyROOT_PyArray_EMPTY(int rows, int cols)
+{
+    npy_intp dims[2] = {rows, cols};
+    return PyArray_EMPTY(2, dims, NPY_FLOAT32, 0);
+}
 
 }
 

@@ -68,7 +68,7 @@ separate_arguments(_PyROOT_FLAGS)
 
 target_compile_options(PyROOT PRIVATE ${_PyROOT_FLAGS})
 target_link_libraries(PyROOT PRIVATE ${PYTHON_LIBRARIES})
-target_include_directories(PyROOT PRIVATE ${PYTHON_INCLUDE_DIRS})
+target_include_directories(PyROOT PRIVATE ${PYTHON_INCLUDE_DIRS} ${NUMPY_INCLUDE_DIRS})
 
 ROOT_LINKER_LIBRARY(JupyROOT JupyROOT/src/IOHandler.cxx DEPENDENCIES Core CMAKENOEXPORT)
 
