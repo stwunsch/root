@@ -71,4 +71,4 @@ if __name__ == "__main__":
     filename = "/home/stefan/Run2012B_DoubleMuParked_1000000.root"
     test_uproot(filename)
     test_pandas(filename)
-    test_rdf(filename, num_threads=4)
+    test_rdf(filename, num_threads=None)

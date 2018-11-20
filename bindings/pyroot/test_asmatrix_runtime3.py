@@ -90,4 +90,4 @@ if __name__ == "__main__":
     test_uproot(filename)
     test_pandas(filename)
     #test_pyroot(filename)
-    test_rdf(filename, num_threads=4)
+    test_rdf(filename, num_threads=None)
