@@ -2,8 +2,6 @@
 #define ROOT_PyROOT_RDataFrameAsMatrix
 
 #include "ROOT/RDF/RInterface.hxx"
-#include <tuple>
-#include <iostream>
 
 namespace PyROOT {
 
@@ -37,13 +35,13 @@ public:
 
    void Finalize()
    {
-      // Get number of events and make Python tuple of that size
+      // Get number of entries
       unsigned int numEntries = 0;
       for (auto i = 0; i < fData.size(); i++) {
          numEntries += fData[i]->size();
       }
 
-      // Fill Python tuple
+      // Fill vector
       fResult->reserve(numEntries);
       for (auto i = 0; i < fData.size(); i++) {
          fResult->insert(fResult->end(), fData[i]->begin(), fData[i]->end());

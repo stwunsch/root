@@ -70,7 +70,7 @@ def test_uproot(filename):
 
 
 if __name__ == "__main__":
-    filename = "/home/stefan/Run2012B_DoubleMuParked_10000000.root"
+    filename = "/home/stefan/Run2012B_DoubleMuParked_1000000.root"
     test_uproot(filename)
     #test_pyroot(filename)
     test_rdf(filename, num_threads=4)

@@ -14,6 +14,7 @@ ROOT_STANDARD_LIBRARY_PACKAGE(PyROOT
     TPySelector.h
     TPython.h
     RDataFrameAsMatrix.h
+    RDataFrameAsDict.h
   SOURCES
     src/Converters.cxx
     src/Cppyy.cxx
