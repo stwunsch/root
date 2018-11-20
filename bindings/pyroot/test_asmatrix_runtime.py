@@ -28,6 +28,7 @@ def test_rdf(filename, num_threads=None):
     end = time()
     print("Runtime RDF: {}".format(end-start))
     print("Test: {}, {}".format(np.mean(npy, axis=0), npy.shape))
+    print(npy.flags)
 
 
 def test_pyroot(filename):
@@ -36,6 +37,7 @@ def test_pyroot(filename):
     end = time()
     print("Runtime pyroot: {}".format(end-start))
     print("Test: {}, {}".format(np.mean(npy, axis=0), npy.shape))
+    print(npy.flags)
 
 
 def run_pyroot(filename):
@@ -64,6 +66,7 @@ def test_uproot(filename):
     end = time()
     print("Runtime uproot: {}".format(end-start))
     print("Test: {}, {}".format(np.mean(npy, axis=0), npy.shape))
+    print(npy.flags)
 
 
 if __name__ == "__main__":
