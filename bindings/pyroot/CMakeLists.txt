@@ -13,7 +13,7 @@ ROOT_STANDARD_LIBRARY_PACKAGE(PyROOT
     TPyROOTApplication.h
     TPySelector.h
     TPython.h
-    RDataFrameAsNumpy.h
+    RDataFrameAsMatrix.h
   SOURCES
     src/Converters.cxx
     src/Cppyy.cxx
