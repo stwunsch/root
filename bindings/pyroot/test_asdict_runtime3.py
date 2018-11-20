@@ -2,6 +2,7 @@ import ROOT
 import numpy as np
 from time import time
 import uproot
+import root_pandas
 
 
 keep_alive = []
@@ -50,7 +51,24 @@ def test_uproot(filename):
     print(dic["nMuon"].flags)
 
 
+def run_pandas(filename):
+    df = root_pandas.read_root(filename, 'Events', columns=["nElectron", "nMuon"])
+    dic = {"nMuon": df["nMuon"], "nElectron": df["nElectron"]}
+    return dic
+
+
+def test_pandas(filename):
+    start = time()
+    dic = run_pandas(filename)
+    end = time()
+    print("Runtime pandas: {}".format(end-start))
+    print("Test: {}, {}, {}".format(np.mean(dic["nMuon"]), dic["nMuon"].size, dic["nMuon"].dtype))
+    print("Test: {}, {}, {}".format(np.mean(dic["nElectron"]), dic["nElectron"].size, dic["nMuon"].dtype))
+    print(dic["nMuon"].flags)
+
+
 if __name__ == "__main__":
     filename = "/home/stefan/Run2012B_DoubleMuParked_1000000.root"
     test_uproot(filename)
+    test_pandas(filename)
     test_rdf(filename, num_threads=4)

@@ -2,6 +2,7 @@ import ROOT
 import numpy as np
 from time import time
 import uproot
+import root_pandas
 
 
 def run_rdf(filename):
@@ -69,8 +70,24 @@ def test_uproot(filename):
     print(npy.flags)
 
 
+def run_pandas(filename):
+    df = root_pandas.read_root(filename, 'Events', columns=["nElectron", "nMuon"])
+    npy = df.as_matrix()
+    return npy
+
+
+def test_pandas(filename):
+    start = time()
+    npy = run_pandas(filename)
+    end = time()
+    print("Runtime pandas: {}".format(end-start))
+    print("Test: {}, {}, {}".format(np.mean(npy, axis=0), npy.shape, npy.dtype))
+    print(npy.flags)
+
+
 if __name__ == "__main__":
-    filename = "/home/stefan/Run2012B_DoubleMuParked_1000000.root"
+    filename = "/home/stefan/Run2012B_DoubleMuParked_10000000.root"
     test_uproot(filename)
+    test_pandas(filename)
     #test_pyroot(filename)
     test_rdf(filename, num_threads=4)
