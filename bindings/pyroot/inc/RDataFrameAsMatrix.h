@@ -31,7 +31,7 @@ public:
    void InitTask(TTreeReader *, unsigned int) {}
    void Exec(unsigned int slot, ColTypes... values)
    {
-      int expander[] = {(fData[slot]->emplace_back(float(values)), 0)..., 0};
+      int expander[] = {(fData[slot]->emplace_back(OutputType(values)), 0)..., 0};
       (void)expander;
    }
 
@@ -46,9 +46,12 @@ public:
       // Fill Python tuple
       fResult->reserve(numEntries);
       for (auto i = 0; i < fData.size(); i++) {
+         fResult->insert(fResult->end(), fData[i]->begin(), fData[i]->end());
+         /*
          for (auto j = 0; j < fData[i]->size(); j++) {
             fResult->emplace_back(fData[i]->at(j));
          }
+         */
       }
    }
    std::string GetActionName() { return "AsMatrixHelper"; }

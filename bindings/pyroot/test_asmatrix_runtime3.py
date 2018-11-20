@@ -27,7 +27,7 @@ def test_rdf(filename, num_threads=None):
     npy = run_rdf(filename)
     end = time()
     print("Runtime RDF: {}".format(end-start))
-    print("Test: {}, {}".format(np.mean(npy, axis=0), npy.shape))
+    print("Test: {}, {}, {}".format(np.mean(npy, axis=0), npy.shape, npy.dtype))
     print(npy.flags)
 
 
@@ -36,7 +36,7 @@ def test_pyroot(filename):
     npy = run_pyroot(filename)
     end = time()
     print("Runtime pyroot: {}".format(end-start))
-    print("Test: {}, {}".format(np.mean(npy, axis=0), npy.shape))
+    print("Test: {}, {}, {}".format(np.mean(npy, axis=0), npy.shape, npy.dtype))
     print(npy.flags)
 
 
@@ -65,12 +65,12 @@ def test_uproot(filename):
     npy = run_uproot(filename)
     end = time()
     print("Runtime uproot: {}".format(end-start))
-    print("Test: {}, {}".format(np.mean(npy, axis=0), npy.shape))
+    print("Test: {}, {}, {}".format(np.mean(npy, axis=0), npy.shape, npy.dtype))
     print(npy.flags)
 
 
 if __name__ == "__main__":
-    filename = "/home/stefan/cms_opendata_higgs/Run2012B_DoubleMuParked.root"
+    filename = "/home/stefan/Run2012B_DoubleMuParked_10000000.root"
     test_uproot(filename)
     #test_pyroot(filename)
     test_rdf(filename, num_threads=4)
