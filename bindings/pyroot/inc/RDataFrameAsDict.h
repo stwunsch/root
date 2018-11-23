@@ -5,6 +5,12 @@
 
 namespace PyROOT {
 
+class TakeHelper {
+public:
+   ROOT::RDF::RResultPtr<std::vector<unsigned int>> Take(ROOT::RDF::RNode df, std::string column);
+};
+
+/*
 template <typename T>
 class TakeHelper {
 public:
@@ -13,6 +19,7 @@ public:
       return df.Take<T>(column);
    }
 };
+*/
 }
 
 #endif

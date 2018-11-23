@@ -11,7 +11,7 @@ keep_alive = []
 def run_rdf(filename):
     df = ROOT.RDataFrame("Events", filename)
     df_rnode = ROOT.PyROOT.AsRNode(df)
-    helper = ROOT.PyROOT.TakeHelper("unsigned int")()
+    helper = ROOT.PyROOT.TakeHelper()
     x = helper.Take(df_rnode, "nMuon")
     y = helper.Take(df_rnode, "nElectron")
     keep_alive.append(x)
@@ -28,10 +28,10 @@ def test_rdf(filename, num_threads=None):
     start = time()
     dic = run_rdf(filename)
     end = time()
-    print("Runtime RDF: {}".format(end-start))
+    print("Runtime RDF for reading {0:} events: {1:.2f}s".format(dic["nMuon"].size, end-start))
     print("Test: {}, {}, {}".format(np.mean(dic["nMuon"]), dic["nMuon"].size, dic["nMuon"].dtype))
     print("Test: {}, {}, {}".format(np.mean(dic["nElectron"]), dic["nElectron"].size, dic["nMuon"].dtype))
-    print(dic["nMuon"].flags)
+    #print(dic["nMuon"].flags)
 
 
 def run_uproot(filename):
@@ -45,10 +45,10 @@ def test_uproot(filename):
     start = time()
     dic = run_uproot(filename)
     end = time()
-    print("Runtime uproot: {}".format(end-start))
+    print("Runtime uproot for reading {0:} events: {1:.2f}s".format(dic["nMuon"].size, end-start))
     print("Test: {}, {}, {}".format(np.mean(dic["nMuon"]), dic["nMuon"].size, dic["nMuon"].dtype))
     print("Test: {}, {}, {}".format(np.mean(dic["nElectron"]), dic["nElectron"].size, dic["nMuon"].dtype))
-    print(dic["nMuon"].flags)
+    #print(dic["nMuon"].flags)
 
 
 def run_pandas(filename):
@@ -61,14 +61,15 @@ def test_pandas(filename):
     start = time()
     dic = run_pandas(filename)
     end = time()
-    print("Runtime pandas: {}".format(end-start))
+    print("Runtime root_pandas for reading {0:} events: {1:.2f}s".format(dic["nMuon"].size, end-start))
     print("Test: {}, {}, {}".format(np.mean(dic["nMuon"]), dic["nMuon"].size, dic["nMuon"].dtype))
     print("Test: {}, {}, {}".format(np.mean(dic["nElectron"]), dic["nElectron"].size, dic["nMuon"].dtype))
-    print(dic["nMuon"].flags)
+    #print(dic["nMuon"].flags)
 
 
 if __name__ == "__main__":
-    filename = "/home/stefan/Run2012B_DoubleMuParked_1000000.root"
+    filename = "~/Run2012B_DoubleMuParked_verylarge.root"
+    #filename = "~/cms_opendata_higgs/large_nanoaod.root"
     test_uproot(filename)
     test_pandas(filename)
-    test_rdf(filename, num_threads=None)
+    test_rdf(filename, num_threads=4)

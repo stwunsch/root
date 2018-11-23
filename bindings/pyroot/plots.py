@@ -23,3 +23,15 @@ plt.legend()
 plt.xlabel("Entries")
 plt.ylabel("Time in seconds")
 plt.savefig("dict.png", bbox_inches="tight")
+
+plt.figure(3, figsize=(5,5))
+x = [1e3, 1e4, 1e5, 1e6, 1e7]
+uproot = [      0.01, 0.01, 0.02, 0.05, 0.41, ]
+root_numpy = [  0.06, 0.06, 0.07, 0.13, 0.82, ]
+rdf = [         0.23, 0.23, 0.24, 1.15, 1.15, ]
+for y, l in zip([rdf, uproot, root_numpy], ["RDataFrame", "uproot", "root_numpy"]):
+    plt.loglog(x, y, "o-", label=l)
+plt.legend()
+plt.xlabel("Entries")
+plt.ylabel("Time in seconds")
+plt.savefig("dict_fixed.png", bbox_inches="tight")

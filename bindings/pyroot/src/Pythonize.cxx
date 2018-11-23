@@ -46,6 +46,7 @@
 #include "ROOT/RVec.hxx"
 #include "ROOT/RDF/RInterface.hxx"
 #include "RDataFrameAsNumpy.h"
+#include "RDataFrameAsDict.h"
 
 // Standard
 #include <stdexcept>
@@ -61,6 +62,11 @@
 
 
 namespace PyROOT {
+
+ROOT::RDF::RResultPtr<std::vector<unsigned int>> TakeHelper::Take(ROOT::RDF::RNode df, std::string column)
+{
+  return df.Take<unsigned int>(column);
+}
 
 int PyROOT_PyTuple_SetItem(PyObject* po, unsigned int pos, PyObject* item)
 {
