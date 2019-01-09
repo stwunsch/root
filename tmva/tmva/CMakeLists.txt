@@ -168,6 +168,7 @@ set(TMVA_HEADERS
   TMVA/Volume.h
   TMVA/RTensor.hxx
   TMVA/RTensorUtils.hxx
+  TMVA/RFisher.hxx
 )
 
 #---Assign source files to the implementations -----------------
