@@ -3,13 +3,47 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "TMVA/RTensor.hxx"
 #include "ROOT/RDataFrame.hxx"
 #include "ROOT/RDF/RInterface.hxx"
+#include "TMVA/Reader.h"
 
 namespace TMVA {
 namespace Experimental {
+
+class RReader {
+private:
+   std::vector<float> fValues;
+   std::unique_ptr<Reader> fReader;
+
+public:
+   RReader(const std::string &path)
+   {
+      fReader = std::make_unique<Reader>("Silent");
+      const auto numVars = 4;
+      fValues = std::vector<float>(numVars);       // TODO: Determine this at construction time
+      for (unsigned int i = 0; i < numVars; i++) { // TODO: Find variable names as well at construction time
+         fReader->AddVariable(TString::Format("var%u", i + 1), &fValues[i]);
+      }
+      fReader->BookMVA("TMVAInference", path.c_str());
+   }
+   RTensor<float> Predict(RTensor<float> &x)
+   {
+      const auto shape = x.GetShape();
+      const auto numEntries = shape[0];
+      const auto numVars = shape[1];
+      RTensor<float> y({numEntries});
+      for (std::size_t i = 0; i < numEntries; i++) {
+         for (std::size_t j = 0; j < numVars; j++) {
+            fValues[j] = x(i, j);
+         }
+         y(i) = fReader->EvaluateMVA("TMVAInference");
+      }
+      return y;
+   }
+};
 
 /// \brief Convert the content of an RDataFrame to an RTensor
 /// \param[in] dataframe RDataFrame node
