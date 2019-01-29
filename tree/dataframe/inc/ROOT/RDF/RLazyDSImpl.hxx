@@ -37,11 +37,11 @@ namespace RDF {
 ///
 /// The implementation takes care of matching compile time information with runtime
 /// information, e.g. expanding in a smart way the template parameters packs.
-template <typename... ColumnTypes>
+template <template <typename T> class PtrType, typename... ColumnTypes>
 class RLazyDS final : public ROOT::RDF::RDataSource {
    using PointerHolderPtrs_t = std::vector<ROOT::Internal::TDS::TPointerHolder *>;
 
-   std::tuple<RResultPtr<std::vector<ColumnTypes>>...> fColumns;
+   std::tuple<PtrType<std::vector<ColumnTypes>>...> fColumns;
    const std::vector<std::string> fColNames;
    const std::map<std::string, std::string> fColTypesMap;
    // The role of the fPouinterHoldersModels is to be initialised with the pack
@@ -117,8 +117,8 @@ protected:
    std::string AsString() { return "lazy data source"; };
 
 public:
-   RLazyDS(std::pair<std::string, RResultPtr<std::vector<ColumnTypes>>>... colsNameVals)
-      : fColumns(std::tuple<RResultPtr<std::vector<ColumnTypes>>...>(colsNameVals.second...)),
+   RLazyDS(std::pair<std::string, PtrType<std::vector<ColumnTypes>>>... colsNameVals)
+      : fColumns(std::tuple<PtrType<std::vector<ColumnTypes>>...>(colsNameVals.second...)),
         fColNames({colsNameVals.first...}),
         fColTypesMap({{colsNameVals.first, ROOT::Internal::RDF::TypeID2TypeName(typeid(ColumnTypes))}...}),
         fPointerHoldersModels({new ROOT::Internal::TDS::TTypedPointerHolder<ColumnTypes>(new ColumnTypes())...})
