@@ -405,7 +405,7 @@ PyObject* CPyCppyy::UCharAsIntConverter::FromMemory(void* address)
 
 //----------------------------------------------------------------------------
 bool CPyCppyy::WCharConverter::SetArg(
-    PyObject* pyobject, Parameter& para, CallContext* ctxt)
+    PyObject* pyobject, Parameter& para, CallContext* /* ctxt */)
 {
 // convert <pyobject> to C++ <wchar_t>, set arg for call
     if (!PyUnicode_Check(pyobject) || PyUnicode_GET_SIZE(pyobject) != 1) {
@@ -1500,6 +1500,7 @@ bool CPyCppyy::PyObjectConverter::ToMemory(PyObject* value, void* address)
 {
 // no conversion needed, write <value> at <address>
     Py_INCREF(value);
+    Py_XDECREF(*((PyObject**)address));
     *((PyObject**)address) = value;
     return true;
 }
@@ -1524,8 +1525,7 @@ static PyObject* WrapperCacheEraser(PyObject*, PyObject* pyref)
         sWrapperFree[ipos->second.second].push_back(wpraddress);
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 static PyMethodDef gWrapperCacheEraserMethodDef = {
     const_cast<char*>("interal_WrapperCacheEraser"),
@@ -1624,10 +1624,10 @@ bool CPyCppyy::FunctionPointerConverter::SetArg(
                 code << argtypes[i] << " arg" << i;
                 if (i != nArgs-1) code << ", ";
             }
-            code << ") {\n  static std::unique_ptr<CPyCppyy::Converter> retconv{(CPyCppyy::Converter*)cppyy_create_converter(\"" << fRetType << "\", nullptr)};\n";
+            code << ") {\n  static std::unique_ptr<CPyCppyy::Converter> retconv{CPyCppyy::CreateConverter(\"" << fRetType << "\")};\n";
             for (int i = 0; i < nArgs; ++i) {
                 code << "  static std::unique_ptr<CPyCppyy::Converter> arg" << i
-                        << "conv{(CPyCppyy::Converter*)cppyy_create_converter(\"" << argtypes[i] << "\", nullptr)};\n";
+                        << "conv{CPyCppyy::CreateConverter(\"" << argtypes[i] << "\")};\n";
             }
             code << "  " << fRetType << " ret{};\n"
                     "  PyGILState_STATE state = PyGILState_Ensure();\n";
@@ -1681,6 +1681,17 @@ bool CPyCppyy::FunctionPointerConverter::SetArg(
         }
     }
 
+    return false;
+}
+
+PyObject* CPyCppyy::FunctionPointerConverter::FromMemory(void* address)
+{
+    PyErr_SetString(PyExc_NotImplementedError, "not implemented");
+    return nullptr;
+}
+
+bool CPyCppyy::FunctionPointerConverter::ToMemory(PyObject* value, void* address)
+{
     return false;
 }
 
@@ -1836,6 +1847,7 @@ bool CPyCppyy::NotImplementedConverter::SetArg(PyObject*, Parameter&, CallContex
 
 
 //- factories ----------------------------------------------------------------
+CPYCPPYY_EXPORT
 CPyCppyy::Converter* CPyCppyy::CreateConverter(const std::string& fullType, long* dims)
 {
 // The matching of the fulltype to a converter factory goes through up to five levels:
@@ -1959,8 +1971,14 @@ CPyCppyy::Converter* CPyCppyy::CreateConverter(const std::string& fullType, long
             resolvedType.substr(0, pos1), resolvedType.substr(pos2+2));
     }
 
-    if (!result && cpd == "&&")                       // unhandled moves
+    if (!result && cpd == "&&") {
+    // for builting, can use const-ref for r-ref
+        h = gConvFactories.find("const " + realType + "&");
+        if (h != gConvFactories.end())
+            return (h->second)(size);
+    // else, unhandled moves
         result = new NotImplementedConverter();
+    }
 
     if (!result && h != gConvFactories.end())
     // converter factory available, use it to create converter
@@ -1969,7 +1987,7 @@ CPyCppyy::Converter* CPyCppyy::CreateConverter(const std::string& fullType, long
         if (cpd != "") {
             result = new VoidArrayConverter();        // "user knows best"
         } else {
-            result = new VoidConverter();             // fails on use
+            result = new NotImplementedConverter();   // fails on use
         }
     }
 

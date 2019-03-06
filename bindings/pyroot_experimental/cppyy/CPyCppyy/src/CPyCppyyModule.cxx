@@ -656,13 +656,6 @@ PyObject* Cast(PyObject*, PyObject* args)
                                obj->fFlags & CPPInstance::kIsReference);
 }
 
-
-//----------------------------------------------------------------------------
-void* create_converter(const char* type_name, long* dims)
-{
-    return (void*)CreateConverter(type_name, dims);
-}
-
 } // unnamed namespace
 
 
@@ -825,6 +818,13 @@ extern "C" void initlibcppyy()
     if (PyType_Ready(&LowLevelView_Type) < 0)
         CPYCPPYY_INIT_ERROR;
 
+// custom iterators
+    if (PyType_Ready(&IndexIter_Type) < 0)
+        CPYCPPYY_INIT_ERROR;
+
+    if (PyType_Ready(&VectorIter_Type) < 0)
+        CPYCPPYY_INIT_ERROR;
+
 // inject identifiable nullptr
     gNullPtrObject = (PyObject*)&_CPyCppyy_NullPtrStruct;
     Py_INCREF(gNullPtrObject);
@@ -844,9 +844,6 @@ extern "C" void initlibcppyy()
 
 // create the memory regulator
     static MemoryRegulator s_memory_regulator;
-
-// setup the converter creator callback
-    cppyy_set_converter_creator(create_converter);
 
 #if PY_VERSION_HEX >= 0x03000000
     Py_INCREF(gThisModule);

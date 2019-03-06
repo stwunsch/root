@@ -46,8 +46,8 @@ public:
             PyErr_SetString(PyExc_TypeError, "parameter must be callable");
             return;
         }
+        Py_INCREF(callable);
         fCallable = callable;
-        Py_INCREF(fCallable);
     }
 
     virtual ~TPythonCallback() {
@@ -874,6 +874,7 @@ void CPyCppyy::CPPOverload::AddMethod(CPPOverload* meth)
     fMethodInfo->fMethods.insert(fMethodInfo->fMethods.end(),
         meth->fMethodInfo->fMethods.begin(), meth->fMethodInfo->fMethods.end());
     fMethodInfo->fFlags &= ~CallContext::kIsSorted;
+    meth->fMethodInfo->fMethods.clear();
 }
 
 //-----------------------------------------------------------------------------
