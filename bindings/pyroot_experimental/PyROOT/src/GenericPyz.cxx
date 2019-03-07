@@ -200,7 +200,18 @@ PyObject* NumbaCallableImpl_call(PyObject * /*self*/, PyObject *args)
    }
 
    // Jit Python callable
-   auto args_ = Py_BuildValue("(s)", (char*)"float32(float32)");
+   std::stringstream numbaSignature;
+   numbaSignature << typemap[returnTypeStr] << "(";
+   for(auto i = 0; i < inputTypesSize; i++) {
+      numbaSignature << numbaTypes[i];
+      if (i != inputTypesSize - 1) {
+         numbaSignature << ", ";
+      } else {
+         numbaSignature << ")";
+      }
+   }
+   auto numbaSignatureStr = numbaSignature.str();
+   auto args_ = Py_BuildValue("(s)", (char*)numbaSignatureStr.c_str());
    auto kwargs_ = Py_BuildValue("{s:O}", (char*)"nopython", Py_True);
    auto decorator = PyObject_Call(cfunc, args_, kwargs_);
    if (!decorator) {
@@ -255,6 +266,9 @@ PyObject* NumbaCallableImpl_call(PyObject * /*self*/, PyObject *args)
          fPtr << ")";
       }
    }
+
+   // Protect multi-threaded scenario
+   //code << "   R__WRITE_LOCKGUARD(ROOT::gCoreMutex);\n";
 
    // Cast int to C function pointer
    code << "   auto funcptr = reinterpret_cast<" << fPtr.str() << ">(" << address << ");\n";
