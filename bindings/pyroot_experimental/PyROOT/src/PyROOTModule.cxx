@@ -63,6 +63,8 @@ static PyMethodDef gPyROOTMethods[] = {{(char *)"AddDirectoryWritePyz", (PyCFunc
                                         (char *)"Get size of data-type"},
                                        {(char *)"AsRVec", (PyCFunction)PyROOT::AsRVec, METH_O,
                                         (char *)"Get object with array interface as RVec"},
+                                       {(char *)"NumbaCallableClass", (PyCFunction)PyROOT::NumbaCallableClass, METH_NOARGS,
+                                        (char *)"Wrap Python callable as C++ callable using numba"},
                                        {NULL, NULL, 0, NULL}};
 
 #if PY_VERSION_HEX >= 0x03000000

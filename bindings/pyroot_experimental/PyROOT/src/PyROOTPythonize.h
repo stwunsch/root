@@ -31,6 +31,7 @@ PyObject *AddTClassDynamicCastPyz(PyObject *self, PyObject *args);
 PyObject *AddSetItemTCAPyz(PyObject *self, PyObject *args);
 
 PyObject *AsRVec(PyObject *self, PyObject *obj);
+PyObject *NumbaCallableClass(PyObject *self, PyObject *args);
 
 PyObject *GetEndianess(PyObject *self);
 PyObject *GetVectorDataPointer(PyObject *self, PyObject *args);

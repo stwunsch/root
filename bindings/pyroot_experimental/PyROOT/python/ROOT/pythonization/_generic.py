@@ -8,7 +8,7 @@
 # For the list of contributors see $ROOTSYS/README/CREDITS.                    #
 ################################################################################
 
-from libROOTPython import AddPrettyPrintingPyz
+from libROOTPython import AddPrettyPrintingPyz, NumbaCallableClass
 from ROOT import pythonization
 
 
@@ -22,3 +22,6 @@ def pythonizegeneric(klass, name):
     AddPrettyPrintingPyz(klass)
 
     return True
+
+import cppyy
+cppyy.gbl.DeclareNumbaCallable = NumbaCallableClass()
