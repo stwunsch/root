@@ -28,5 +28,8 @@ if(dataframe)
     ROOT_ADD_GTEST(rreader rreader.cxx LIBRARIES ROOTVecOps TMVA ROOTDataFrame)
 endif()
 
+# Tree inference system
+ROOT_ADD_GTEST(branchlessForest branchlessForest.cxx LIBRARIES TMVA)
+
 project(tmva-tests)
 find_package(ROOT REQUIRED)
