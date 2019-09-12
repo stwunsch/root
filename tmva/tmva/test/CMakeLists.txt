@@ -30,6 +30,7 @@ endif()
 
 # Tree inference system
 ROOT_ADD_GTEST(branchlessForest branchlessForest.cxx LIBRARIES TMVA)
+ROOT_ADD_GTEST(rbdt rbdt.cxx LIBRARIES ROOTVecOps TMVA)
 
 project(tmva-tests)
 find_package(ROOT REQUIRED)
