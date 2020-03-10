@@ -14,6 +14,7 @@
 #include "TInterpreter.h"
 #include "TROOT.h" // IsImplicitMTEnabled
 #include "TTreeReader.h"
+#include "TStopwatch.h"
 
 #ifdef R__USE_IMT
 #include "ROOT/TThreadExecutor.hxx"
@@ -25,6 +26,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 using namespace ROOT::Detail::RDF;
 using namespace ROOT::Internal::RDF;
@@ -464,12 +468,32 @@ void RLoopManager::JitDeclarations()
    fToJitDeclare.clear();
 }
 
+static double counter = 0;
+
 /// Add RDF nodes that require just-in-time compilation to the computation graph.
 /// This method also invokes JitDeclarations() if needed, and clears the `fToJitExec` member variable.
 void RLoopManager::Jit()
 {
    if (fToJitExec.empty())
       return;
+
+   std::stringstream ss;
+   ss << "dataframe_" << counter << ".cpp";
+   std::ofstream myfile;
+   myfile.open (ss.str());
+   myfile << "#include \"ROOT/RVec.hxx\"\n";
+   myfile << "#include \"ROOT/RDF/RLoopManager.hxx\"\n";
+   myfile << "#include \"ROOT/RDF/RJittedFilter.hxx\"\n";
+   myfile << "#include \"ROOT/RDF/RJittedCustomColumn.hxx\"\n";
+   myfile << "#include \"ROOT/RDF/RNodeBase.hxx\"\n";
+   myfile << "#include \"ROOT/RDF/InterfaceUtils.hxx\"\n";
+   myfile << "#include \"ROOT/RDF/RJittedAction.hxx\"\n";
+   myfile << "#include \"ROOT/RDF/RBookedCustomColumns.hxx\"\n";
+   myfile << "#include <memory>\n";
+   myfile << fToJitDeclare;
+   myfile << "\n\n\n";
+   myfile << fToJitExec;
+   myfile.close();
 
    JitDeclarations();
    RDFInternal::InterpreterCalc(fToJitExec, "RLoopManager::Run");
@@ -497,14 +521,34 @@ unsigned int RLoopManager::GetNextID()
    return id;
 }
 
+static double jittime = 0;
+static double runtime = 0;
+static std::string jitcode = "";
+
 /// Start the event loop with a different mechanism depending on IMT/no IMT, data source/no data source.
 /// Also perform a few setup and clean-up operations (jit actions if necessary, clear booked actions after the loop...).
 void RLoopManager::Run()
 {
+   std::cout << "<<< BEGIN" << std::endl;
+   std::cout << "Dataframe: " << counter << std::endl;
+   std::cout << "Jit:" << std::endl;
+   TStopwatch t;
+   t.Start();
    Jit();
+   t.Stop();
+   t.Print();
+   jittime += t.RealTime();
 
+   std::cout << "Init nodes:" << std::endl;
+   t.Reset();
+   t.Start();
    InitNodes();
+   t.Stop();
+   t.Print();
 
+   std::cout << "Run:" << std::endl;
+   t.Reset();
+   t.Start();
    switch (fLoopType) {
    case ELoopType::kNoFilesMT: RunEmptySourceMT(); break;
    case ELoopType::kROOTFilesMT: RunTreeProcessorMT(); break;
@@ -513,10 +557,24 @@ void RLoopManager::Run()
    case ELoopType::kROOTFiles: RunTreeReader(); break;
    case ELoopType::kDataSource: RunDataSource(); break;
    }
+   t.Stop();
+   t.Print();
+   runtime += t.RealTime();
 
+   std::cout << "Clean-up:" << std::endl;
+   t.Reset();
+   t.Start();
    CleanUpNodes();
 
    fNRuns++;
+   t.Stop();
+   t.Print();
+
+   std::cout << "Sum jittime: " << jittime << std::endl;
+   std::cout << "Sum runtime: " << runtime << std::endl;
+   std::cout << ">>> DONE" << std::endl << std::endl;
+
+   counter++;
 }
 
 /// Return the list of default columns -- empty if none was provided when constructing the RDataFrame

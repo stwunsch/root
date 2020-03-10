@@ -19,6 +19,9 @@
 import ROOT
 import json
 import argparse
+from time import time
+
+time1 = time()
 
 # Argument parsing
 parser = argparse.ArgumentParser()
@@ -47,6 +50,9 @@ for p in processes:
 
         # Scale down the datasets
         df[sample] = df[sample].Range(int(num_events * args.lumi_scale))
+
+time2 = time()
+print("Time init and create RDF: {}".format(time2 - time1))
 
 # Select events for the analysis
 ROOT.gInterpreter.Declare("""
@@ -101,6 +107,10 @@ for s in samples:
     df[s] = df[s].Define("mt_w", "ComputeTransverseMass(met_et, met_phi, lep_pt[idx], lep_eta[idx], lep_phi[idx], lep_E[idx])")
     histos[s] = df[s].Histo1D(ROOT.ROOT.RDF.TH1DModel(s, "mt_w", 40, 60, 180), "mt_w", "weight")
 
+
+time3 = time()
+print("Build graphs: {}".format(time3 - time2))
+
 # Run the event loop and merge histograms of the respective processes
 
 def merge_histos(label):
@@ -120,6 +130,10 @@ zjets = merge_histos("zjets")
 ttbar = merge_histos("ttbar")
 diboson = merge_histos("diboson")
 singletop = merge_histos("singletop")
+
+
+time4 = time()
+print("Event loop: {}".format(time4 - time3))
 
 # Create the plot
 
@@ -192,3 +206,6 @@ text.DrawLatex(0.21, 0.80, "#sqrt{{s}} = 13 TeV, {:.1f} fb^{{-1}}".format(lumi *
 
 # Save the plot
 c.SaveAs("WBosonAnalysis.pdf")
+
+time5 = time()
+print("Plotting: {}".format(time5 - time4))
