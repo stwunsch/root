@@ -66,10 +66,10 @@ PyObject *PyROOT::MakeNumpyDataFrame(PyObject * /*self*/, PyObject * pydata)
       std::string keystr = CPyCppyy_PyText_AsString(key);
 
       // Convert value to RVec and attach to dictionary
-      auto pyvec = PyROOT::AsRVec(NULL, value);
+      auto pyvec = PyROOT::RVecFromNumpy(NULL, value);
       if (pyvec == NULL) {
          PyErr_SetString(PyExc_RuntimeError,
-                         ("Object not convertible: Dictionary entry " + keystr + " is not convertible with AsRVec.").c_str());
+                         ("Object not convertible: Dictionary entry " + keystr + " is not convertible with RVec::FromNumpy.").c_str());
          return NULL;
       }
       PyDict_SetItem(pyvecs, key, pyvec);

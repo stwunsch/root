@@ -25,7 +25,7 @@
 /// This function returns an RVec which adopts the memory of the given
 /// PyObject. The RVec takes the data pointer and the size from the array
 /// interface dictionary.
-PyObject *PyROOT::AsRVec(PyObject * /*self*/, PyObject * obj)
+PyObject *PyROOT::RVecFromNumpy(PyObject * /*self*/, PyObject * obj)
 {
    if (!obj) {
       PyErr_SetString(PyExc_RuntimeError, "Object not convertible: Invalid Python object.");

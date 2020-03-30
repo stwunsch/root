@@ -9,7 +9,7 @@
 ################################################################################
 
 from ROOT import pythonization
-from libROOTPythonizations import GetEndianess, GetDataPointer, GetSizeOfType, AsRVec
+from libROOTPythonizations import GetEndianess, GetDataPointer, GetSizeOfType, RVecFromNumpy
 
 
 _array_interface_dtype_map = {
@@ -62,10 +62,7 @@ def pythonize_rvec(klass, name):
     if name.startswith("ROOT::VecOps::RVec<"):
         # Add numpy array interface
         add_array_interface_property(klass, name)
+        # Add FromNumpy method
+        klass.FromNumpy = RVecFromNumpy
 
     return True
-
-
-# Add AsRVec feature as free function to the ROOT module
-import cppyy
-cppyy.gbl.ROOT.VecOps.AsRVec = AsRVec

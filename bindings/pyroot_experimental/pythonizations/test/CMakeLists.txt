@@ -81,7 +81,7 @@ ROOT_ADD_PYUNITTEST(pyroot_pyz_tobjstring_str_repr tobjstring_str_repr.py)
 ROOT_ADD_PYUNITTEST(pyroot_pyz_tobjstring_comparisonops tobjstring_comparisonops.py)
 
 # RVec and subclasses pythonizations
-ROOT_ADD_PYUNITTEST(pyroot_pyz_rvec_asrvec rvec_asrvec.py DEPENDENCIES_FOUND ${NUMPY_FOUND})
+ROOT_ADD_PYUNITTEST(pyroot_pyz_rvec_fromnumpy rvec_fromnumpy.py DEPENDENCIES_FOUND ${NUMPY_FOUND})
 
 # RDataFrame and subclasses pythonizations
 if (dataframe)
