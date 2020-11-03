@@ -108,8 +108,8 @@ float ComputeInvariantMass(VecF_t pt, VecF_t eta, VecF_t phi, VecF_t e)
 
 histos = {}
 for s in samples:
-    df[s] = df[s].Define("m4l", "ComputeInvariantMass(goodlep_pt, goodlep_eta, goodlep_phi, goodlep_E)")
-    histos[s] = df[s].Histo1D(ROOT.RDF.TH1DModel(s, "m4l", 24, 80, 170), "m4l", "weight")
+    df[s] = df[s].Define("mass_4l", "ComputeInvariantMass(goodlep_pt, goodlep_eta, goodlep_phi, goodlep_E)")
+    histos[s] = df[s].Histo1D(ROOT.RDF.TH1DModel(s, "mass_4l", 24, 80, 170), "mass_4l", "weight")
 
 # Run the event loop and merge histograms of the respective processes
 
