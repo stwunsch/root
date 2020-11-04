@@ -38,7 +38,7 @@ float InterpolateSystematicWeight(float met_et, bool isUpShift) {
 def build_graph(sample, variation):
     # Different reconstruction / different MC sample / variations in the analysis ntuples
     if 'ptcut' in variation:
-        filename = "{}.4lep.{}.root".format(sample, var)
+        filename = "{}.4lep.{}.root".format(sample, variation)
     else:
         filename = "{}.4lep.root".format(sample)
     df = ROOT.RDataFrame("mini", "{}.4lep.root".format(sample))
