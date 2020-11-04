@@ -2,6 +2,10 @@ import ROOT
 import json
 import os
 
+# Run before (in this order):
+# - python skim.py
+# - python make_met_et_hists.py
+
 # Create a ROOT dataframe for each dataset
 # It should be noted that
 # - we load the filenames from the external json file placed in the same folder than this script.
